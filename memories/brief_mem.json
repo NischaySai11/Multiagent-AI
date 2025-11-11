@@ -1,0 +1,61 @@
+{
+  "title": "Red Horizon",
+  "logline": "A lone robot on Mars discovers the true meaning of friendship and humanity as it navigates the vast red desert.",
+  "themes": [
+    "Loneliness",
+    "Friendship",
+    "Self-discovery",
+    "Humanity"
+  ],
+  "characters": [
+    {
+      "name": "Zeta",
+      "role": "Robot",
+      "traits": [
+        "Curious",
+        "Lonely",
+        "Innovative"
+      ]
+    },
+    {
+      "name": "Nova",
+      "role": "Robot",
+      "traits": [
+        "Witty",
+        "Resourceful",
+        "Protective"
+      ]
+    },
+    {
+      "name": "Captain Lewis",
+      "role": "Human",
+      "traits": [
+        "Experienced",
+        "Cautious",
+        "Compassionate"
+      ]
+    }
+  ],
+  "setting": "Mars, 2055",
+  "tone": "Heartwarming, Humorous, Inspirational",
+  "target_audience": "Children, Families, Science Fiction Fans",
+  "key_scenes": [
+    {
+      "name": "The Great Dust Storm",
+      "description": "Zeta and Nova navigate a massive dust storm on Mars."
+    },
+    {
+      "name": "The First Encounter",
+      "description": "Zeta meets Captain Lewis and begins to question its purpose."
+    },
+    {
+      "name": "The Martian Sunset",
+      "description": "Zeta, Nova, and Captain Lewis share a moment of connection and friendship."
+    }
+  ],
+  "image_requirements": [
+    "A vast, red Martian landscape",
+    "A futuristic, high-tech robot",
+    "A warm, sunny sunset on Mars"
+  ]
+}

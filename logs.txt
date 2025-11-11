@@ -1,0 +1,63 @@
+# Logs appended at runtime. Each line: timestamp | agent | summary
+2025-11-11T18:33:01.124586 | BriefAgent | ERROR: GROQ_API_KEY not set in environment
+2025-11-11T18:33:01.127093 | WriterAgent | ERROR: GROQ_API_KEY not set in environment
+2025-11-11T18:33:01.128082 | VisualAgent | ERROR: GROQ_API_KEY not set in environment
+2025-11-11T18:33:01.130188 | ReviewerAgent | ERROR: GROQ_API_KEY not set in environment
+2025-11-11T18:33:01.131715 | PublisherAgent | ERROR: GROQ_API_KEY not set in environment
+2025-11-11T18:39:08.096681 | BriefAgent | [ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(host='api.groq.ai', port=443): Max retries exceeded with
+2025-11-11T18:39:11.204524 | WriterAgent | [ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(host='api.groq.ai', port=443): Max retries exceeded with
+2025-11-11T18:39:14.247339 | VisualAgent | {'raw_visuals': '[ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(host=\'api.groq.ai\', port=443): Max re
+2025-11-11T18:39:17.369982 | ReviewerAgent | Invalid JSON from model
+2025-11-11T18:39:20.392707 | PublisherAgent | [ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(host='api.groq.ai', port=443): Max retries exceeded with
+2025-11-11T18:50:15.580600 | BriefAgent | [ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/openai/v1/chat/com
+2025-11-11T18:50:15.582601 | BriefAgent | {'raw_brief': '[ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/ope
+2025-11-11T18:50:21.966904 | WriterAgent | [ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/openai/v1/chat/com
+2025-11-11T18:50:21.967507 | WriterAgent | [ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/openai/v1/chat/com
+2025-11-11T18:50:28.331913 | VisualAgent | {'raw_visuals': '[ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/o
+2025-11-11T18:50:28.332911 | VisualAgent | {'raw_visuals': '[ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/o
+2025-11-11T18:50:34.564220 | ReviewerAgent | Invalid JSON from model
+2025-11-11T18:50:34.565591 | ReviewerAgent | {'error': 'Reviewer did not return valid JSON', 'raw': '[ERROR] Model call failed after 3 attempts: 404 Client Error: No
+2025-11-11T18:50:40.831375 | PublisherAgent | [ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/openai/v1/chat/com
+2025-11-11T18:50:40.833906 | PublisherAgent | [ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/openai/v1/chat/com
+2025-11-11T18:54:21.514943 | BriefAgent | [ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/openai/v1/chat/com
+2025-11-11T18:54:21.518516 | BriefAgent | {'raw_brief': '[ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/ope
+2025-11-11T18:54:27.781141 | WriterAgent | [ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/openai/v1/chat/com
+2025-11-11T18:54:27.783178 | WriterAgent | [ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/openai/v1/chat/com
+2025-11-11T18:54:34.118342 | VisualAgent | {'raw_visuals': '[ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/o
+2025-11-11T18:54:34.120325 | VisualAgent | {'raw_visuals': '[ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/o
+2025-11-11T18:54:40.510924 | ReviewerAgent | Invalid JSON from model
+2025-11-11T18:54:40.513878 | ReviewerAgent | {'error': 'Reviewer did not return valid JSON', 'raw': '[ERROR] Model call failed after 3 attempts: 404 Client Error: No
+2025-11-11T18:54:46.885728 | PublisherAgent | [ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/openai/v1/chat/com
+2025-11-11T18:54:46.888735 | PublisherAgent | [ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/openai/v1/chat/com
+2025-11-11T18:57:11.667157 | BriefAgent | [ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/openai/v1/chat/com
+2025-11-11T18:57:11.669511 | BriefAgent | {'raw_brief': '[ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/ope
+2025-11-11T18:57:17.948906 | WriterAgent | [ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/openai/v1/chat/com
+2025-11-11T18:57:17.952913 | WriterAgent | [ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/openai/v1/chat/com
+2025-11-11T18:57:24.259002 | VisualAgent | {'raw_visuals': '[ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/o
+2025-11-11T18:57:24.262729 | VisualAgent | {'raw_visuals': '[ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/o
+2025-11-11T18:57:30.557119 | ReviewerAgent | Invalid JSON from model
+2025-11-11T18:57:30.559118 | ReviewerAgent | {'error': 'Reviewer did not return valid JSON', 'raw': '[ERROR] Model call failed after 3 attempts: 404 Client Error: No
+2025-11-11T18:57:36.862159 | PublisherAgent | [ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/openai/v1/chat/com
+2025-11-11T18:57:36.863698 | PublisherAgent | [ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/openai/v1/chat/com
+2025-11-11T19:02:53.908303 | BriefAgent | Red Planet Companion
+2025-11-11T19:02:53.911301 | BriefAgent | {'title': 'Red Planet Companion', 'logline': 'A lone robot on Mars discovers the true meaning of friendship when it befr
+2025-11-11T19:03:00.204569 | WriterAgent | [ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/openai/v1/chat/com
+2025-11-11T19:03:00.206094 | WriterAgent | [ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/openai/v1/chat/com
+2025-11-11T19:03:06.485804 | VisualAgent | {'raw_visuals': '[ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/o
+2025-11-11T19:03:06.487810 | VisualAgent | {'raw_visuals': '[ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/o
+2025-11-11T19:03:12.782979 | ReviewerAgent | Invalid JSON from model
+2025-11-11T19:03:12.784041 | ReviewerAgent | {'error': 'Reviewer did not return valid JSON', 'raw': '[ERROR] Model call failed after 3 attempts: 404 Client Error: No
+2025-11-11T19:03:19.067392 | PublisherAgent | [ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/openai/v1/chat/com
+2025-11-11T19:03:19.069562 | PublisherAgent | [ERROR] Model call failed after 3 attempts: 404 Client Error: Not Found for url: https://api.groq.com/openai/v1/chat/com
+2025-11-11T19:07:27.218742 | BriefAgent | Red Horizon
+2025-11-11T19:07:27.224007 | BriefAgent | {'title': 'Red Horizon', 'logline': 'A lone robot on Mars discovers the true meaning of friendship and humanity as it na
+2025-11-11T19:07:29.163114 | WriterAgent | Red Horizon  The rust-red sands of Mars stretched out before Zeta like an endless sea. The lone robot trudged through th
+2025-11-11T19:07:29.164111 | WriterAgent | Red Horizon
+
+The rust-red sands of Mars stretched out before Zeta like an endless sea. The lone robot trudged through th
+2025-11-11T19:07:29.985620 | VisualAgent | {'raw_visuals': 'Here are three image-generation prompts for key scenes in "Red Horizon":\n\n```json\n[\n  {\n    "id": 
+2025-11-11T19:07:29.987611 | VisualAgent | {'raw_visuals': 'Here are three image-generation prompts for key scenes in "Red Horizon":\n\n```json\n[\n  {\n    "id": 
+2025-11-11T19:07:30.525704 | ReviewerAgent | Validation failed: {'id': 2, 'type': 'Minor', 'description': "The story's pacing could be adjusted to better balance the exposition and action scenes."} is not of type 'string'
+2025-11-11T19:07:30.527704 | ReviewerAgent | {'error': 'validation_failed', 'message': '{\'id\': 2, \'type\': \'Minor\', \'description\': "The story\'s pacing could 
+2025-11-11T19:07:36.826909 | PublisherAgent | [ERROR] Model call failed after 3 attempts: 429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/
+2025-11-11T19:07:36.829319 | PublisherAgent | [ERROR] Model call failed after 3 attempts: 429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/
