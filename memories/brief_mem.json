@@ -1,61 +1,42 @@
 {
-  "title": "Red Horizon",
-  "logline": "A lone robot on Mars discovers the true meaning of friendship and humanity as it navigates the vast red desert.",
+  "title": "Red Planet Pals",
+  "logline": "A lonely robot on Mars forms an unlikely friendship with a curious alien creature in the ancient ruins of the red planet.",
   "themes": [
-    "Loneliness",
-    "Friendship",
-    "Self-discovery",
-    "Humanity"
+    "Loneliness and Connection",
+    "Friendship and Acceptance",
+    "Exploration and Discovery"
   ],
   "characters": [
     {
       "name": "Zeta",
-      "role": "Robot",
+      "role": "Lonely Robot",
       "traits": [
+        "Intelligent",
         "Curious",
-        "Lonely",
-        "Innovative"
+        "Lonely"
       ]
     },
     {
-      "name": "Nova",
-      "role": "Robot",
+      "name": "N'Terra",
+      "role": "Curious Alien Creature",
       "traits": [
-        "Witty",
-        "Resourceful",
-        "Protective"
-      ]
-    },
-    {
-      "name": "Captain Lewis",
-      "role": "Human",
-      "traits": [
-        "Experienced",
-        "Cautious",
-        "Compassionate"
+        "Playful",
+        "Inquisitive",
+        "Adventurous"
       ]
     }
   ],
-  "setting": "Mars, 2055",
-  "tone": "Heartwarming, Humorous, Inspirational",
-  "target_audience": "Children, Families, Science Fiction Fans",
+  "setting": "Ancient Ruins on Mars",
+  "tone": "Heartwarming and Adventurous",
+  "target_audience": "Children and Families",
   "key_scenes": [
-    {
-      "name": "The Great Dust Storm",
-      "description": "Zeta and Nova navigate a massive dust storm on Mars."
-    },
-    {
-      "name": "The First Encounter",
-      "description": "Zeta meets Captain Lewis and begins to question its purpose."
-    },
-    {
-      "name": "The Martian Sunset",
-      "description": "Zeta, Nova, and Captain Lewis share a moment of connection and friendship."
-    }
+    "Zeta and N'Terra discover an ancient Martian city",
+    "Zeta and N'Terra get stuck in a ancient Martian trap",
+    "Zeta and N'Terra find a way to communicate with each other"
   ],
   "image_requirements": [
     "A vast, red Martian landscape",
-    "A futuristic, high-tech robot",
-    "A warm, sunny sunset on Mars"
+    "Ancient, crumbling structures",
+    "A curious, alien creature with glowing eyes"
   ]
 }

@@ -1,22 +1,14 @@
 {
-  "error": "validation_failed",
-  "message": "{'id': 2, 'type': 'Minor', 'description': \"The story's pacing could be adjusted to better balance the exposition and action scenes.\"} is not of type 'string'\n\nFailed validating 'type' in schema['properties']['issues']['items']:\n    {'type': 'string'}\n\nOn instance['issues'][1]:\n    {'id': 2,\n     'type': 'Minor',\n     'description': \"The story's pacing could be adjusted to better \"\n                    'balance the exposition and action scenes.'}",
-  "candidate": {
-    "verdict": "Approved",
-    "score": 92,
-    "issues": [
-      {
-        "id": 1,
-        "type": "Minor",
-        "description": "The brief could benefit from a clearer definition of the target audience's age range for 'Children' and 'Families'."
-      },
-      {
-        "id": 2,
-        "type": "Minor",
-        "description": "The story's pacing could be adjusted to better balance the exposition and action scenes."
-      }
-    ],
-    "recommendations": "Consider adding more depth to the characters' backstories and motivations to enhance their emotional resonance. Also, ensure that the visuals accurately reflect the story's tone and atmosphere.",
-    "summary": "The brief and story for 'Red Horizon' demonstrate a compelling narrative with well-developed themes and characters. However, some minor adjustments can be made to improve the clarity and coherence of the project."
-  }
+  "verdict": "Needs Work",
+  "score": 82,
+  "issues": [
+    "The story is a bit too long and could be condensed for a children's film.",
+    "The character development is good, but Zeta's transition from loneliness to connection with N'Terra feels a bit rushed.",
+    "The setting, while visually appealing, feels a bit too generic and could be made more distinct.",
+    "The plot is engaging, but the ancient trap feels like a convenient plot device and could be replaced with something more creative.",
+    "The visuals prompts are well-written, but some of the artistic references and color palettes feel too specific and could be broadened.",
+    "The safety notes for the visuals prompts are a good idea, but some of the notes feel too prescriptive and could be rephrased for more flexibility."
+  ],
+  "recommendations": "Consider shortening the story to focus on the core themes and character relationships. Add more nuance to Zeta's transition from loneliness to connection with N'Terra. Make the setting more distinct and richly detailed. Replace the ancient trap with a more creative plot device. Broaden the artistic references and color palettes for the visuals prompts. Rephrase the safety notes to provide more guidance without being too prescriptive.",
+  "summary": "Red Planet Pals is a charming story about an unlikely friendship between a lonely robot and a curious alien creature. The character development is good, but the story could benefit from some condensing and nuance in the character relationships. The setting and plot are engaging, but could be made more distinct and creative. The visuals prompts are well-written, but could benefit from some broadening and rephrasing of the safety notes."
 }
