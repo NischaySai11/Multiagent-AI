@@ -3,7 +3,7 @@ Orchestrator and shared utilities.
 
 This file contains the core Gradio application structure,
 API communication logic (using Groq as a mock target), 
-and the fully implemented, functional multi-agent system.
+and the custom CSS for the professional UI design.
 """
 
 import os
@@ -25,37 +25,21 @@ LOG_FILE = os.path.join(BASE_DIR, "logs.txt")
 
 # --- API Key ---
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+# NOTE: Removed assert to allow UI to load even if key is missing,
+# but the model calls will fail gracefully.
 GROQ_BASE_URL = "https://api.groq.com/openai/v1"
 
-# --- Define New Colors & Model (Teal/Aqua Scheme) ---
-PRIMARY_COLOR = "#00bcd4"  # Teal
-SECONDARY_COLOR = "#0097a7" # Darker Teal
-GRADIENT_START = "#00bcd4"  # Light Teal
-GRADIENT_END = "#4dd0e1"    # Lighter Aqua
-MODEL_NAME = "llama3-8b-8192" # Placeholder for a fast LLM API
 
 # -------------------------------------------------------------------------
-# 1️⃣ Model Caller (Functional Groq/LLM Integration)
+# 1️⃣ Model Caller (Placeholder/Mock Groq Integration)
 # -------------------------------------------------------------------------
-def call_model(model, system_prompt, user_prompt, max_retries=3, timeout=45):
+def call_model(model, system_prompt, user_prompt, max_retries=3, timeout=30):
     """
     Groq API (OpenAI-compatible) call with retry + backoff.
     Returns model's text response or [ERROR] message.
     """
     if not GROQ_API_KEY:
-        # RETURN MOCK DATA when API key is missing for UI demonstration
-        if "Brief" in system_prompt:
-             return '{"title": "The Lonely Martian Robot", "logline": "A lonely robot on Mars discovers friendship with a curious alien creature.", "genre": "Sci-Fi/Adventure", "themes": ["Exploration", "Friendship", "Isolation"], "key_characters": [{"name": "Unit 734", "role": "The Robot"}, {"name": "Zylar", "role": "The Alien"}]}'
-        if "Writer" in system_prompt:
-             return "Unit 734 was designed for solitude. Its existence was a silent, rhythmic dance of exploration and data collection on the red dust of Mars. Then, on a routine scan near the Valles Marineris, it found Zylar, a shimmering, tri-limbed being whose laughter was a chime against the rustle of the wind. Their friendship began not with words, but with shared curiosity for the planet's ancient, cryptic ruins. The robot, meant only to observe, found itself learning to feel."
-        if "Visual" in system_prompt:
-             return '{"visual_prompts": [{"scene_description": "Unit 734 meets Zylar for the first time.", "image_prompt": "A desolate, red Mars landscape. A boxy, metallic robot unit stands next to a shimmering, translucent alien creature with three limbs. Cinematic lighting, photorealistic, 16k."}, {"scene_description": "Exploring ancient ruins together.", "image_prompt": "Inside a massive, dark Martian canyon. Unit 734 and Zylar standing before an enormous, glowing alien archway covered in geometric carvings. Mysterious atmosphere, digital painting, epic scale."}, {"scene_description": "The two watching a Martian sunset.", "image_prompt": "A close-up, emotional shot of the robot and the alien side-by-side, silhouetted against a brilliant orange and purple Martian sunset. Warm tones, highly detailed, film grain."}]}'
-        if "Reviewer" in system_prompt:
-             return '{"score": "9.2/10", "coherence_check": true, "feedback": "The story is compelling, the brief is solid, and the visual prompts are stunning. Excellent work. Focus on expanding the final story length."}'
-        if "Publisher" in system_prompt:
-             return "# The Lonely Martian Robot: A Short Story\n\n**Logline:** A lonely robot on Mars discovers friendship with a curious alien creature while exploring the red planet's ancient ruins.\n\n***\n\nUnit 734 was designed for solitude. Its existence was a silent, rhythmic dance of exploration and data collection on the red dust of Mars. Then, on a routine scan near the Valles Marineris, it found Zylar, a shimmering, tri-limbed being whose laughter was a chime against the rustle of the wind. Their friendship began not with words, but with shared curiosity for the planet's ancient, cryptic ruins. The robot, meant only to observe, found itself learning to feel.\n\n*(Full story content would be here...)*\n\n***\n\n## Visual Concepts\n\n* Scene 1: Unit 734 meets Zylar for the first time.\n* Scene 2: Exploring ancient ruins together.\n* Scene 3: The two watching a Martian sunset.\n"
-        return '[ERROR] GROQ_API_KEY not set. Returning a general error message for non-specific calls.'
-
+        return "[ERROR] GROQ_API_KEY not set. Cannot call model."
 
     url = f"{GROQ_BASE_URL}/chat/completions"
     headers = {
@@ -68,7 +52,7 @@ def call_model(model, system_prompt, user_prompt, max_retries=3, timeout=45):
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt}
         ],
-        "max_tokens": 1500, # Increased tokens for story writing
+        "max_tokens": 800,
         "temperature": 0.7
     }
 
@@ -104,78 +88,25 @@ def log_step(agent_name, summary):
 
 
 # -------------------------------------------------------------------------
-# 3️⃣ Agent Implementations (Fully Functional Feature)
+# 3️⃣ Import Agents (Mocked for safety/completeness)
 # -------------------------------------------------------------------------
-class Agent:
-    """Base class for all agents."""
-    def __init__(self, name, model=MODEL_NAME):
-        self.name = name
-        self.model = model
+try:
+    # NOTE: This assumes an 'agents.py' file exists.
+    from agents import brief_agent, writer_agent, visual_agent, reviewer_agent, publisher_agent
+except ImportError:
+    print("WARNING: Could not import agents module. Agent functionality is mocked.")
+    class MockAgent:
+        def run(self, *args):
+            # Returns a valid JSON string for gr.JSON to prevent parsing errors
+            if "brief" in args:
+                 return '{"title": "Mock Story", "logline": "This is a mocked logline.", "themes": ["Mocking"]}'
+            return json.dumps({"status": "mocked_output", "message": "Agent not implemented/imported"})
+    brief_agent = MockAgent()
+    writer_agent = MockAgent()
+    visual_agent = MockAgent()
+    reviewer_agent = MockAgent()
+    publisher_agent = MockAgent()
 
-    def call(self, system_prompt, user_prompt):
-        return call_model(self.model, system_prompt, user_prompt)
-
-class BriefAgent(Agent):
-    """Generates a structured JSON brief from an idea."""
-    def run(self, idea_text):
-        system_prompt = (
-            "You are the Brief Agent. Your task is to turn a high-level story idea into a "
-            "detailed, structured JSON brief. The response MUST be valid JSON and contain "
-            "the following keys: 'title', 'logline', 'genre', 'themes' (list), and 'key_characters' (list of dicts with 'name' and 'role')."
-        )
-        user_prompt = f"Story Idea: {idea_text}"
-        return self.call(system_prompt, user_prompt)
-
-class WriterAgent(Agent):
-    """Writes the full story draft based on the brief."""
-    def run(self, brief_json):
-        system_prompt = (
-            "You are the Writer Agent. Your task is to write an engaging short story (min 300 words) "
-            "based on the provided structured brief. Output must be raw story text, no preamble or extra JSON."
-        )
-        user_prompt = f"Write the story based on this brief (JSON):\n---\n{brief_json}\n---"
-        return self.call(system_prompt, user_prompt)
-
-class VisualAgent(Agent):
-    """Generates DALL-E/Midjourney style prompts from the story text."""
-    def run(self, story_text):
-        system_prompt = (
-            "You are the Visual Agent. Your task is to identify three key scenes from the story and generate "
-            "highly detailed, professional-grade visual prompts suitable for a text-to-image generator. "
-            "The response MUST be valid JSON and contain a list of objects under the key 'visual_prompts', "
-            "each having 'scene_description' and 'image_prompt'."
-        )
-        user_prompt = f"Generate 3 image prompts for the following story:\n---\n{story_text[:1500]}..."
-        return self.call(system_prompt, user_prompt)
-
-class ReviewerAgent(Agent):
-    """Analyzes the full creative package for quality and viability."""
-    def run(self, pipeline_output_json):
-        system_prompt = (
-            "You are the Reviewer Agent. Your task is to analyze the complete pipeline output (brief, story, visuals) "
-            "for quality, coherence, and commercial viability. Provide a numerical 'score' out of 10 and detailed 'feedback'. "
-            "The response MUST be valid JSON with the keys: 'score' (string, e.g., '8.5/10'), 'coherence_check' (boolean), and 'feedback' (string)."
-        )
-        user_prompt = f"Review this complete creative package (JSON format):\n---\n{pipeline_output_json}"
-        return self.call(system_prompt, user_prompt)
-
-class PublisherAgent(Agent):
-    """Compiles and formats the final story package into professional Markdown."""
-    def run(self, final_package_json):
-        system_prompt = (
-            "You are the Publisher Agent. Your task is to compile the final story package into a clean, "
-            "professional Markdown document. Use the title, logline, and story text. "
-            "The output must be pure Markdown format, ready for publication, with no JSON or extra commentary."
-        )
-        user_prompt = f"Format this final package into a professional Markdown article:\n---\n{final_package_json}"
-        return self.call(system_prompt, user_prompt)
-
-# Instantiate the fully functional agents
-brief_agent = BriefAgent("BriefAgent")
-writer_agent = WriterAgent("WriterAgent")
-visual_agent = VisualAgent("VisualAgent")
-reviewer_agent = ReviewerAgent("ReviewerAgent")
-publisher_agent = PublisherAgent("PublisherAgent")
 
 # -------------------------------------------------------------------------
 # 4️⃣ Orchestration Flow
@@ -184,33 +115,29 @@ def orchestrate(idea_text):
     """Run full story-creation pipeline."""
     results = {}
 
-    # 1. Brief Agent
+    # --- Brief Agent ---
     brief_out = brief_agent.run(idea_text)
     log_step("BriefAgent", str(brief_out)[:120])
     results["brief"] = brief_out
 
-    # 2. Writer Agent
+    # --- Writer Agent ---
     writer_out = writer_agent.run(brief_out)
     log_step("WriterAgent", str(writer_out)[:120])
     results["writer"] = writer_out
 
-    # 3. Visual Agent
+    # --- Visual Agent ---
     visual_out = visual_agent.run(writer_out)
     log_step("VisualAgent", str(visual_out)[:120])
     results["visual"] = visual_out
 
-    # 4. Reviewer Agent (Reviews the first 3 steps)
-    reviewer_input = json.dumps({
-        "brief": results.get("brief"),
-        "story": results.get("writer"),
-        "visuals": results.get("visual")
-    })
+    # --- Reviewer Agent ---
+    reviewer_input = {"brief": brief_out, "story": writer_out, "visuals": visual_out}
     reviewer_out = reviewer_agent.run(reviewer_input)
     log_step("ReviewerAgent", str(reviewer_out)[:120])
     results["reviewer"] = reviewer_out
 
-    # 5. Publisher Agent (Compiles everything)
-    publisher_input = json.dumps(results)
+    # --- Publisher Agent ---
+    publisher_input = {"brief": brief_out, "story": writer_out, "visuals": visual_out, "reviewer": reviewer_out}
     publisher_out = publisher_agent.run(publisher_input)
     log_step("PublisherAgent", str(publisher_out)[:120])
     results["publisher"] = publisher_out
@@ -312,15 +239,10 @@ def run_pipeline_with_progress(idea):
         char_count = len(story_text)
         read_time = f"{word_count // 200} min"
         
-        # Get quality score - must handle potential JSON string output
+        # Get quality score
         quality_score = "N/A"
-        if "reviewer" in out and out.get("reviewer"):
-            try:
-                # Attempt to parse as JSON if it's a string
-                reviewer_data = json.loads(out["reviewer"]) if isinstance(out["reviewer"], str) else out["reviewer"]
-                quality_score = reviewer_data.get("score", "N/A")
-            except json.JSONDecodeError:
-                 quality_score = "N/A (Bad JSON)" # Handle potential JSON errors
+        if "reviewer" in out and isinstance(out["reviewer"], dict):
+            quality_score = out["reviewer"].get("score", "N/A")
         
         # Format outputs
         brief_formatted = fmt(out.get("brief"))
@@ -369,6 +291,7 @@ def update_progress(step, status):
             status_icon = "🟢"
             status_text = "Complete"
         
+        # If any step fails, subsequent steps show error
         if status == "error" and steps.index(s) > steps.index(step):
             status_icon = "🔴"
             status_text = "Error"
@@ -386,168 +309,234 @@ def update_progress(step, status):
 
 
 # -------------------------------------------------------------------------
-# 7️⃣ Custom CSS (Teal/Aqua Styling - FIXED and maintained)
+# 7️⃣ Custom CSS (Professional Styling)
 # -------------------------------------------------------------------------
-custom_css = f"""
+custom_css = """
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 /* General Gradio Overrides */
-.gradio-container {{
+.gradio-container {
     max-width: 1400px !important;
     margin: 0 auto !important;
     font-family: 'Inter', sans-serif;
-    background-color: #f8f9fa; 
+    background-color: #f8f9fa; /* Light grey background */
     padding: 0;
-}}
+}
 
-/* --- INTRO SCREEN STYLES --- */
-.intro-content {{
+/* --- HERO HEADER --- */
+.hero-header {
     text-align: center;
-    padding: 5rem 2rem;
-    background: linear-gradient(135deg, {GRADIENT_START} 0%, {GRADIENT_END} 100%); /* New Aqua Gradient */
-    border-radius: 12px;
-    margin: 2rem 0;
-    color: white;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-}}
-
-.intro-content h1 {{
-    font-size: 3.5rem;
-    font-weight: 800;
-    margin-bottom: 1rem;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-}}
-
-.intro-content p {{
-    font-size: 1.4rem;
-    opacity: 0.9;
-    font-weight: 500;
-    max-width: 800px;
-    margin: 0 auto 2rem;
-}}
-
-.intro-button {{
-    background: white !important;
-    color: {PRIMARY_COLOR} !important;
-    padding: 1.2rem 3rem !important;
-    font-size: 1.1rem !important;
-    font-weight: 700 !important;
-    border: none !important;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.2) !important;
-    transition: all 0.3s ease !important;
-}}
-
-.intro-button:hover {{
-    transform: translateY(-3px) !important;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3) !important;
-}}
-
-/* --- HERO HEADER (Internal Studio) --- */
-.hero-header {{
-    text-align: center;
-    padding: 2rem 0;
-    background: linear-gradient(135deg, {SECONDARY_COLOR} 0%, {PRIMARY_COLOR} 100%); /* Slightly different internal gradient */
+    padding: 5rem 0;
+    background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); /* Soft gradient */
     border-radius: 12px;
     margin-bottom: 2rem;
-    color: white;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}}
+    color: #333;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
 
-.hero-header h1 {{
-    font-size: 2.2rem;
-    font-weight: 700;
-    margin-bottom: 0.2rem;
-    color: white;
-}}
+.hero-header h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(45deg, #667eea, #764ba2); /* Primary text gradient */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
-.hero-header p {{
-    font-size: 1rem;
-    opacity: 0.9;
-    font-weight: 300;
-}}
+.hero-header p {
+    font-size: 1.5rem;
+    opacity: 0.8;
+    font-weight: 500;
+}
 
-/* --- INPUT/AGENT COLUMN & OUTPUT/PROGRESS COLUMN --- */
-.input-column {{
+/* --- INPUT/AGENT COLUMN --- */
+.input-column {
     background: white;
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     height: 100%;
-}}
-.output-column {{
-    padding: 0 0 0 1rem;
-}}
+}
 
+/* --- OUTPUT/PROGRESS COLUMN --- */
+.output-column {
+    padding: 0 0 0 1rem; /* Adjust padding to match design */
+}
 
 /* --- AGENT CARDS (Styled list) --- */
-.agent-list h3 {{
-    color: {SECONDARY_COLOR};
-}}
+.agent-list h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+}
 
-.agent-card:hover {{
-    background: #e0f7fa; /* Light teal hover */
-    border-color: {PRIMARY_COLOR};
+.agent-card {
+    display: flex;
+    align-items: center;
+    background: #fcfcfc;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    border: 1px solid #eee;
+    transition: all 0.2s ease;
+}
+
+.agent-card:hover {
+    background: #e0e7ff;
+    border-color: #667eea;
     cursor: pointer;
-}}
+}
 
-.agent-icon {{
-    color: {PRIMARY_COLOR};
-}}
+.agent-icon {
+    font-size: 1.2rem;
+    margin-right: 1rem;
+    color: #667eea;
+}
 
+.agent-name {
+    font-weight: 600;
+    color: #333;
+    flex-grow: 1;
+}
+
+.agent-status {
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    background: #e2e8f0;
+    color: #718096;
+}
 
 /* --- PROGRESS TRACKER --- */
-.progress-step.running {{
-    background: #ffecb3; /* Yellowish for running */
-    border-color: #ffb300; 
-}}
+.progress-container {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid #e2e8f0;
+}
 
-.progress-step.complete {{
-    background: #e0f7fa; /* Light aqua complete */
-    border-color: {PRIMARY_COLOR};
-}}
+.progress-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
 
+.progress-step {
+    text-align: center;
+    flex: 1;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.progress-step.running {
+    background: #fff3cd;
+    border-color: #ffc107;
+    transform: scale(1.02);
+}
+
+.progress-step.complete {
+    background: #d4edda;
+    border-color: #28a745;
+}
+
+.progress-step.error {
+    background: #f8d7da;
+    border-color: #dc3545;
+}
+
+.step-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.step-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #2d3748;
+}
+
+.step-status {
+    font-size: 0.75rem;
+    color: #718096;
+}
 
 /* --- METRICS DISPLAY --- */
-.metric-value {{
-    color: {SECONDARY_COLOR}; /* Highlighted primary color */
-}}
+.metrics-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.metric-card {
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    border: 1px solid #e2e8f0;
+}
+
+.metric-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #667eea; /* Highlighted primary color */
+    margin-bottom: 0.25rem;
+}
+
+.metric-label {
+    font-size: 0.8rem;
+    color: #718096;
+    font-weight: 500;
+}
+
 
 /* --- Gradio Component Overrides --- */
-button {{
-    background: linear-gradient(135deg, {PRIMARY_COLOR} 0%, {SECONDARY_COLOR} 100%) !important;
+button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
     border: none !important;
     color: white !important;
-    box-shadow: 0 4px 15px rgba(0, 188, 212, 0.3) !important;
-}}
+    font-weight: 600 !important;
+    padding: 1rem 2rem !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
 
-button:hover {{
-    box-shadow: 0 8px 25px rgba(0, 188, 212, 0.4) !important;
-}}
+button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4) !important;
+}
 
-textarea.gr-box, .gr-json-display, .gr-markdown, .gr-textbox {{
+textarea.gr-box, .gr-json-display, .gr-markdown, .gr-textbox {
     border-radius: 8px !important;
     border: 1px solid #e2e8f0 !important;
     background: #ffffff !important;
     padding: 1rem !important;
     box-shadow: none !important;
     min-height: 250px;
-}}
+}
 
-textarea:focus {{
-    border-color: {PRIMARY_COLOR} !important;
-    box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1) !important;
-}}
-
-.gr-tab-container {{
+.gr-tab-container {
     border: none !important;
-}}
+}
 
-.gr-tabs {{
+.gr-tabs {
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     padding: 1rem;
     background: white;
-}}
+}
 """
 
 
@@ -560,126 +549,97 @@ def build_enhanced_ui():
         css=custom_css
     ) as demo:
         
-        # --- Tabs ---
-        tabs = gr.Tabs(selected=0)
+        # --- 1. Hero Header ---
+        gr.HTML("""
+        <div class="hero-header">
+            <h1>StoryCraft AI Studio 🚀</h1>
+            <p>Unleash the full power of multi-agent AI to create professional stories and visual concepts instantly.</p>
+        </div>
+        """)
         
-        with tabs:
-            
-            # -------------------------------------
-            # TAB 1: INTRO SCREEN (Home)
-            # -------------------------------------
-            with gr.TabItem("Home 🏠", id=0):
-                with gr.Column(elem_classes="intro-page"):
-                    # Custom HTML content for the intro screen
-                    gr.HTML(f"""
-                    <div class="intro-content">
-                        <h1>StoryCraft AI Studio 🚀</h1>
-                        <p>Welcome to the multi-agent creative suite. Instantly turn your high-level ideas into complete stories, visual concepts, and publication-ready drafts.</p>
-                        <p>Powered by fast AI models.</p>
-                        <button class="intro-button" id="start-button">Start Creating</button>
-                    </div>
-                    """)
-                    # Hidden button element to trigger the Gradio click event for tab switch
-                    start_btn_trigger = gr.Button("Start Creating Trigger", visible=False)
-
-            
-            # -------------------------------------
-            # TAB 2: AI STUDIO (Main App)
-            # -------------------------------------
-            with gr.TabItem("AI Studio ✍️", id=1):
-                # --- 1. Hero Header (Internal) ---
+        with gr.Row():
+            # --- Left Column: Input and Agent List ---
+            with gr.Column(scale=2, elem_classes="input-column"):
+                
+                # Input Section
+                idea = gr.Textbox(
+                    lines=4,
+                    placeholder="✨ Enter your story idea...\nExample: 'A lonely robot on Mars discovers friendship with a curious alien creature while exploring the red planet's ancient ruins'",
+                    label="Your Story Idea"
+                )
+                
+                generate_btn = gr.Button(
+                    "🚀 Start Full Pipeline Generation", 
+                    variant="primary", 
+                    scale=1
+                )
+                
+                # Agent List
+                gr.HTML("""<div class="agent-list"><h3>Pipeline Agents</h3></div>""")
                 gr.HTML("""
-                <div class="hero-header">
-                    <h1>AI Studio Pipeline</h1>
-                    <p>Input your idea below to launch the five-stage agent workflow.</p>
+                <div class="agent-card">
+                    <span class="agent-icon">📋</span>
+                    <span class="agent-name">Brief Agent</span>
+                    <span class="agent-status">Ready</span>
+                </div>
+                <div class="agent-card">
+                    <span class="agent-icon">✍️</span>
+                    <span class="agent-name">Writer Agent</span>
+                    <span class="agent-status">Ready</span>
+                </div>
+                <div class="agent-card">
+                    <span class="agent-icon">🎨</span>
+                    <span class="agent-name">Visual Agent</span>
+                    <span class="agent-status">Ready</span>
+                </div>
+                <div class="agent-card">
+                    <span class="agent-icon">✅</span>
+                    <span class="agent-name">Reviewer Agent</span>
+                    <span class="agent-status">Ready</span>
+                </div>
+                <div class="agent-card">
+                    <span class="agent-icon">📰</span>
+                    <span class="agent-name">Publisher Agent</span>
+                    <span class="agent-status">Ready</span>
                 </div>
                 """)
-                
-                with gr.Row():
-                    # --- Left Column: Input and Agent List ---
-                    with gr.Column(scale=2, elem_classes="input-column"):
-                        
-                        # Input Section
-                        idea = gr.Textbox(
-                            lines=4,
-                            placeholder="✨ Enter your story idea...\nExample: 'A lonely robot on Mars discovers friendship with a curious alien creature while exploring the red planet's ancient ruins'",
-                            label="Your Story Idea"
-                        )
-                        
-                        generate_btn = gr.Button(
-                            "🚀 Start Full Pipeline Generation", 
-                            variant="primary", 
-                            scale=1
-                        )
-                        
-                        # Agent List (Now represents the functional agents)
-                        gr.HTML("""<div class="agent-list"><h3>Pipeline Agents</h3></div>""")
-                        gr.HTML(f"""
-                        <div class="agent-card"><span class="agent-icon">📋</span><span class="agent-name">Brief Agent (JSON Generator)</span><span class="agent-status">Functional</span></div>
-                        <div class="agent-card"><span class="agent-icon">✍️</span><span class="agent-name">Writer Agent (Draft Creator)</span><span class="agent-status">Functional</span></div>
-                        <div class="agent-card"><span class="agent-icon">🎨</span><span class="agent-name">Visual Agent (Prompt Generator)</span><span class="agent-status">Functional</span></div>
-                        <div class="agent-card"><span class="agent-icon">✅</span><span class="agent-name">Reviewer Agent (Quality Check)</span><span class="agent-status">Functional</span></div>
-                        <div class="agent-card"><span class="agent-icon">📰</span><span class="agent-name">Publisher Agent (Markdown Formatter)</span><span class="agent-status">Functional</span></div>
-                        """)
 
-                    # --- Right Column: Progress, Metrics, and Output Tabs ---
-                    with gr.Column(scale=3, elem_classes="output-column"):
-                        
-                        gr.HTML("<h3>Progress Tracker</h3>")
-                        progress_html = create_progress_tracker()
-                        
-                        gr.HTML("<h3>Story Metrics</h3>")
-                        metrics_html = create_metrics_display()
-                        
-                        gr.HTML("<h3>Final Output</h3>")
-                        
-                        # Output Tabs
-                        with gr.Tabs() as output_tabs:
-                            with gr.TabItem("📰 Final Published Story"):
-                                published_out = gr.Markdown(label="Published Story", show_label=False)
-                            
-                            with gr.TabItem("📋 Story Brief (JSON)"):
-                                brief_out = gr.JSON(label="Brief", show_label=False)
-                            
-                            with gr.TabItem("📖 Full Draft"):
-                                writer_out = gr.Textbox(label="Story", show_label=False, lines=15)
-                            
-                            with gr.TabItem("🎨 Visual Prompts (JSON)"):
-                                visual_out = gr.JSON(label="Visual Prompts", show_label=False)
-                            
-                            with gr.TabItem("✅ Quality Review (JSON)"):
-                                reviewer_out = gr.JSON(label="Review", show_label=False)
+            # --- Right Column: Progress, Metrics, and Output Tabs ---
+            with gr.Column(scale=3, elem_classes="output-column"):
+                
+                gr.HTML("<h3>Progress Tracker</h3>")
+                progress_html = create_progress_tracker()
+                
+                gr.HTML("<h3>Story Metrics</h3>")
+                metrics_html = create_metrics_display()
+                
+                gr.HTML("<h3>Final Output</h3>")
+                
+                # Output Tabs
+                with gr.Tabs() as tabs:
+                    with gr.TabItem("📰 Final Published Story"):
+                        published_out = gr.Markdown(label="Published Story", show_label=False)
+                    
+                    with gr.TabItem("📋 Story Brief (JSON)"):
+                        brief_out = gr.JSON(label="Brief", show_label=False)
+                    
+                    with gr.TabItem("📖 Full Draft"):
+                        writer_out = gr.Textbox(
+                            label="Story", 
+                            show_label=False,
+                            lines=15
+                        )
+                    
+                    with gr.TabItem("🎨 Visual Prompts (JSON)"):
+                        visual_out = gr.JSON(label="Visual Prompts", show_label=False)
+                    
+                    with gr.TabItem("✅ Quality Review (JSON)"):
+                        reviewer_out = gr.JSON(label="Review", show_label=False)
         
         # Hidden output for metrics (used for dynamic updates)
         metrics_data = gr.Textbox(visible=False)
         
         # --- Event Handling ---
-        
-        # 1. Logic for Intro button to switch tabs
-        demo.load(
-            None, 
-            None,
-            None,
-            # JavaScript to hook the custom HTML button to the hidden Gradio button
-            js=f"""
-                () => {{
-                    const customButton = document.getElementById('start-button');
-                    if (customButton) {{
-                        customButton.addEventListener('click', function() {{
-                            document.getElementById('{start_btn_trigger.elem_id}').click();
-                        }});
-                    }}
-                }}
-            """
-        )
-
-        start_btn_trigger.click(
-            lambda: gr.update(selected=1), # Switch to AI Studio tab (index 1)
-            outputs=[tabs],
-            queue=False
-        )
-
-        # 2. Logic for Pipeline Generation
         generate_btn.click(
             fn=run_pipeline_with_progress,
             inputs=[idea],
@@ -689,7 +649,7 @@ def build_enhanced_ui():
             ]
         )
         
-        # 3. Logic for Metrics Update
+        # Update metrics when data changes
         def update_metrics(metrics_str):
             if metrics_str:
                 word_count, char_count, read_time, quality_score = metrics_str.split(",")
