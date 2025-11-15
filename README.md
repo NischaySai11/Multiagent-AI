@@ -127,11 +127,8 @@ GROQ_API_KEY=your_key_here
 ### 3\. Run the Application
 
 ```bash
-python orchestrator.py
+python app.py
 ```
-
-The application will launch and be accessible at:
-👉 **[http://127.0.0.1:7860](http://127.0.0.1:7860)**
 
 -----
 
