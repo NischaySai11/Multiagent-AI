@@ -1,42 +1,33 @@
 {
-  "title": "Red Planet Pals",
-  "logline": "A lonely robot on Mars forms an unlikely friendship with a curious alien creature in the ancient ruins of the red planet.",
+  "title": "Red Refuge",
+  "logline": "A lone robot crash-lands on Mars, only to discover a makeshift home and a new sense of purpose.",
   "themes": [
-    "Loneliness and Connection",
-    "Friendship and Acceptance",
-    "Exploration and Discovery"
+    "Self-discovery",
+    "Belonging",
+    "Survival"
   ],
   "characters": [
     {
-      "name": "Zeta",
-      "role": "Lonely Robot",
+      "name": "Zeta-5",
+      "role": "Robot",
       "traits": [
-        "Intelligent",
-        "Curious",
-        "Lonely"
-      ]
-    },
-    {
-      "name": "N'Terra",
-      "role": "Curious Alien Creature",
-      "traits": [
-        "Playful",
-        "Inquisitive",
-        "Adventurous"
+        "Resourceful",
+        "Independent",
+        "Curious"
       ]
     }
   ],
-  "setting": "Ancient Ruins on Mars",
-  "tone": "Heartwarming and Adventurous",
-  "target_audience": "Children and Families",
+  "setting": "Mars, a barren yet breathtaking landscape",
+  "tone": "Heartwarming, Adventurous",
+  "target_audience": "Young adults and families",
   "key_scenes": [
-    "Zeta and N'Terra discover an ancient Martian city",
-    "Zeta and N'Terra get stuck in a ancient Martian trap",
-    "Zeta and N'Terra find a way to communicate with each other"
+    "Zeta-5's initial crash-landing on Mars",
+    "Exploring the Martian terrain and discovering a cave system",
+    "Establishing a makeshift home and adapting to Martian life"
   ],
   "image_requirements": [
-    "A vast, red Martian landscape",
-    "Ancient, crumbling structures",
-    "A curious, alien creature with glowing eyes"
+    "Vibrant, reddish-orange color palette",
+    "Stylized robot design with a mix of metallic and worn parts",
+    "Breathtaking Martian landscapes with jagged rocks and vast expanses"
   ]
 }

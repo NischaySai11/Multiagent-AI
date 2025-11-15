@@ -94,3 +94,147 @@ The sun had just risen over the vast, red Martian landscape, casting a warm oran
 ### Story
 
 The sun had just risen over the vast, red Martian landscape, casting
+2025-11-12T18:05:28.997143 | BriefAgent | Red Planet Companion
+2025-11-12T18:05:29.002771 | BriefAgent | {'title': 'Red Planet Companion', 'logline': 'A lone robot on Mars discovers the true meaning of friendship when it befr
+2025-11-12T18:05:30.938143 | WriterAgent | The Red Planet Companion  Red dust swirled around Zeta-5, a lone robot designed to assist with habitat maintenance and r
+2025-11-12T18:05:30.940162 | WriterAgent | The Red Planet Companion
+
+Red dust swirled around Zeta-5, a lone robot designed to assist with habitat maintenance and r
+2025-11-12T18:05:31.960671 | VisualAgent | {'raw_visuals': 'Here are three image-generation prompts for key scenes from The Red Planet Companion:\n\n**1. Scene: Ze
+2025-11-12T18:05:31.962643 | VisualAgent | {'raw_visuals': 'Here are three image-generation prompts for key scenes from The Red Planet Companion:\n\n**1. Scene: Ze
+2025-11-12T18:05:32.606821 | ReviewerAgent | Validation failed: {'type': 'Story', 'description': "The story could benefit from a more nuanced exploration of the themes of loneliness and friendship, particularly in the context of a robot's experiences."} is not of type 'string'
+2025-11-12T18:05:32.607879 | ReviewerAgent | {'error': 'validation_failed', 'message': '{\'type\': \'Story\', \'description\': "The story could benefit from a more n
+2025-11-12T18:05:38.875574 | PublisherAgent | [ERROR] Model call failed after 3 attempts: 429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/
+2025-11-12T18:05:38.877568 | PublisherAgent | [ERROR] Model call failed after 3 attempts: 429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/
+2025-11-14T07:28:41.551672 | BriefAgent | [ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(host='api.groq.com', port=443): Max retries exceeded wit
+2025-11-14T07:28:41.559254 | BriefAgent | {'raw_brief': '[ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(host=\'api.groq.com\', port=443): Max ret
+2025-11-14T07:28:47.590215 | WriterAgent | [ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(host='api.groq.com', port=443): Max retries exceeded wit
+2025-11-14T07:28:47.592174 | WriterAgent | [ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(host='api.groq.com', port=443): Max retries exceeded wit
+2025-11-14T07:28:53.614496 | VisualAgent | {'raw_visuals': '[ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(host=\'api.groq.com\', port=443): Max r
+2025-11-14T07:28:53.615495 | VisualAgent | {'raw_visuals': '[ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(host=\'api.groq.com\', port=443): Max r
+2025-11-14T07:28:59.633288 | ReviewerAgent | Invalid JSON from model
+2025-11-14T07:28:59.634857 | ReviewerAgent | {'error': 'Reviewer did not return valid JSON', 'raw': '[ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(
+2025-11-14T07:29:05.658758 | PublisherAgent | [ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(host='api.groq.com', port=443): Max retries exceeded wit
+2025-11-14T07:29:05.659773 | PublisherAgent | [ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(host='api.groq.com', port=443): Max retries exceeded wit
+2025-11-14T07:32:20.213591 | BriefAgent | [ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(host='api.groq.com', port=443): Max retries exceeded wit
+2025-11-14T07:32:20.216840 | BriefAgent | {'raw_brief': '[ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(host=\'api.groq.com\', port=443): Max ret
+2025-11-14T07:32:26.240135 | WriterAgent | [ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(host='api.groq.com', port=443): Max retries exceeded wit
+2025-11-14T07:32:26.241142 | WriterAgent | [ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(host='api.groq.com', port=443): Max retries exceeded wit
+2025-11-14T07:32:32.263186 | VisualAgent | {'raw_visuals': '[ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(host=\'api.groq.com\', port=443): Max r
+2025-11-14T07:32:32.264122 | VisualAgent | {'raw_visuals': '[ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(host=\'api.groq.com\', port=443): Max r
+2025-11-14T07:32:38.287401 | ReviewerAgent | Invalid JSON from model
+2025-11-14T07:32:38.289435 | ReviewerAgent | {'error': 'Reviewer did not return valid JSON', 'raw': '[ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(
+2025-11-14T07:32:44.316929 | PublisherAgent | [ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(host='api.groq.com', port=443): Max retries exceeded wit
+2025-11-14T07:32:44.317949 | PublisherAgent | [ERROR] Model call failed after 3 attempts: HTTPSConnectionPool(host='api.groq.com', port=443): Max retries exceeded wit
+2025-11-14T07:34:13.608643 | BriefAgent | Red Companion
+2025-11-14T07:34:13.609641 | BriefAgent | {'title': 'Red Companion', 'logline': 'A lonely robot discovers friendship on the unforgiving yet breathtaking landscape
+2025-11-14T07:34:15.264410 | WriterAgent | The Red Companion  Axi trudged across the Martian terrain, the rust-red landscape stretching out before it like an endle
+2025-11-14T07:34:15.271415 | WriterAgent | The Red Companion
+
+Axi trudged across the Martian terrain, the rust-red landscape stretching out before it like an endle
+2025-11-14T07:34:16.788345 | VisualAgent | {'raw_visuals': 'Here are 3 image-generation prompts for key scenes from "The Red Companion":\n\n1. \n```json\n{\n  "id"
+2025-11-14T07:34:16.788858 | VisualAgent | {'raw_visuals': 'Here are 3 image-generation prompts for key scenes from "The Red Companion":\n\n1. \n```json\n{\n  "id"
+2025-11-14T07:34:20.670079 | ReviewerAgent | Overall, 'The Red Companion' is a compelling and heartwarming story that explores themes of loneliness, friendship, and 
+2025-11-14T07:34:20.672069 | ReviewerAgent | {'verdict': 'Approved', 'score': 92, 'issues': ["The story could benefit from a more nuanced exploration of Axi's loneli
+2025-11-14T07:34:31.177833 | PublisherAgent | # The Red Companion ====================  A lonely robot discovers friendship on the unforgiving yet breathtaking landsc
+2025-11-14T07:34:31.179364 | PublisherAgent | # The Red Companion
+====================
+
+A lonely robot discovers friendship on the unforgiving yet breathtaking landsc
+2025-11-14T07:39:42.569011 | BriefAgent | Red Horizon
+2025-11-14T07:39:42.570009 | BriefAgent | {'title': 'Red Horizon', 'logline': 'A lone robot discovers friendship and builds a new home on the unforgiving planet o
+2025-11-14T07:39:44.257410 | WriterAgent | Red Horizon  As Zeta descended onto the Martian surface, its eyes widened with wonder. The barren landscape stretched ou
+2025-11-14T07:39:44.259405 | WriterAgent | Red Horizon
+
+As Zeta descended onto the Martian surface, its eyes widened with wonder. The barren landscape stretched ou
+2025-11-14T07:39:45.506475 | VisualAgent | {'raw_visuals': 'Here are three image-generation prompts for key scenes in the Red Horizon story:\n\n**1. Scene ID: RH00
+2025-11-14T07:39:45.507477 | VisualAgent | {'raw_visuals': 'Here are three image-generation prompts for key scenes in the Red Horizon story:\n\n**1. Scene ID: RH00
+2025-11-14T07:39:46.372650 | ReviewerAgent | Validation failed: {'id': 'RH003-3', 'description': 'The image prompt for RH003 does not provide sufficient context for the hidden cave.', 'severity': 'Low'} is not of type 'string'
+2025-11-14T07:39:46.373650 | ReviewerAgent | {'error': 'validation_failed', 'message': "{'id': 'RH003-3', 'description': 'The image prompt for RH003 does not provide
+2025-11-14T07:39:53.818215 | PublisherAgent | [ERROR] Model call failed after 3 attempts: 429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/
+2025-11-14T07:39:53.819217 | PublisherAgent | [ERROR] Model call failed after 3 attempts: 429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/
+2025-11-14T07:50:36.338709 | BriefAgent | ```json
+{
+  "title": "Red Haven",
+  "logline": "A lone robot discovers the true meaning of friendship and home on a deso
+2025-11-14T07:50:36.341756 | BriefAgent | {'raw_brief': '```json\n{\n  "title": "Red Haven",\n  "logline": "A lone robot discovers the true meaning of friendship 
+2025-11-14T07:50:38.177900 | WriterAgent | Red Haven  Dust swirled across the crimson Martian horizon as Zeta-5, a lone robot, trudged through the desolate landsca
+2025-11-14T07:50:38.178966 | WriterAgent | Red Haven
+
+Dust swirled across the crimson Martian horizon as Zeta-5, a lone robot, trudged through the desolate landsca
+2025-11-14T07:50:39.557562 | VisualAgent | {'raw_visuals': 'Here are three image-generation prompts for key scenes from the story:\n\n```json\n[\n  {\n    "id": 1,
+2025-11-14T07:50:39.558565 | VisualAgent | {'raw_visuals': 'Here are three image-generation prompts for key scenes from the story:\n\n```json\n[\n  {\n    "id": 1,
+2025-11-14T07:50:40.551954 | ReviewerAgent | The story of Red Haven is a heartwarming and adventurous tale of a lone robot discovering the true meaning of friendship
+2025-11-14T07:50:40.554069 | ReviewerAgent | {'verdict': 'Approved', 'score': 92, 'issues': ['The story could benefit from a more nuanced portrayal of the Martian cr
+2025-11-14T07:50:47.755722 | PublisherAgent | [ERROR] Model call failed after 3 attempts: 429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/
+2025-11-14T07:50:47.756743 | PublisherAgent | [ERROR] Model call failed after 3 attempts: 429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/
+2025-11-14T08:37:56.494846 | BriefAgent | Red Horizon
+2025-11-14T08:37:56.503830 | BriefAgent | {'title': 'Red Horizon', 'logline': 'A lone robot on Mars discovers the true meaning of friendship in the most unexpecte
+2025-11-14T08:37:58.235491 | WriterAgent | Red Horizon  The crimson sun set over the barren Martian landscape, casting an otherworldly glow over the vast expanse o
+2025-11-14T08:37:58.237548 | WriterAgent | Red Horizon
+
+The crimson sun set over the barren Martian landscape, casting an otherworldly glow over the vast expanse o
+2025-11-14T08:37:59.496550 | VisualAgent | {'raw_visuals': "Here are three image-generation prompts for key scenes from the Red Horizon story:\n\n**1. Scene: Zeta 
+2025-11-14T08:37:59.498487 | VisualAgent | {'raw_visuals': "Here are three image-generation prompts for key scenes from the Red Horizon story:\n\n**1. Scene: Zeta 
+2025-11-14T08:38:00.501042 | ReviewerAgent | Red Horizon is a heartwarming and engaging story that explores the themes of friendship and belonging in a unique and co
+2025-11-14T08:38:00.502039 | ReviewerAgent | {'verdict': 'Approved', 'score': 92, 'issues': ['The story could benefit from a more defined conflict or challenge for Z
+2025-11-14T08:38:12.564795 | PublisherAgent | # Red Horizon ## A Lone Robot's Journey to Friendship  [**Image: RH001 - Zeta Surveying the Martian Landscape**](#rh001)
+2025-11-14T08:38:12.566793 | PublisherAgent | # Red Horizon
+## A Lone Robot's Journey to Friendship
+
+[**Image: RH001 - Zeta Surveying the Martian Landscape**](#rh001)
+2025-11-15T09:28:35.411619 | BriefAgent | Red Horizon
+2025-11-15T09:28:35.415977 | BriefAgent | {'title': 'Red Horizon', 'logline': 'A lone robot discovers a new home on Mars, forging a connection with humanity and r
+2025-11-15T09:28:36.927526 | WriterAgent | Red Horizon  The crimson landscape of Mars stretched out before Zeta like an eternal, barren sea. Its wheels, designed f
+2025-11-15T09:28:36.928546 | WriterAgent | Red Horizon
+
+The crimson landscape of Mars stretched out before Zeta like an eternal, barren sea. Its wheels, designed f
+2025-11-15T09:28:37.702331 | VisualAgent | {'raw_visuals': 'Here are three image-generation prompts for key scenes from the story:\n\n```json\n[\n  {\n    "id": "R
+2025-11-15T09:28:37.703331 | VisualAgent | {'raw_visuals': 'Here are three image-generation prompts for key scenes from the story:\n\n```json\n[\n  {\n    "id": "R
+2025-11-15T09:28:38.333985 | ReviewerAgent | Validation failed: {'category': 'visuals', 'subcategory': 'style', 'description': 'While the visual prompts are well-written and clear, they could benefit from more specific guidance on color palette and texture to ensure consistency throughout the story.'} is not of type 'string'
+2025-11-15T09:28:38.350280 | ReviewerAgent | {'error': 'validation_failed', 'message': "{'category': 'visuals', 'subcategory': 'style', 'description': 'While the vis
+2025-11-15T09:28:43.332843 | PublisherAgent | # Red Horizon =====================================  A lone robot discovers a new home on Mars, forging a connection wit
+2025-11-15T09:28:43.334849 | PublisherAgent | # Red Horizon
+=====================================
+
+A lone robot discovers a new home on Mars, forging a connection wit
+2025-11-15T09:29:38.448033 | BriefAgent | Red Horizon
+2025-11-15T09:29:38.450090 | BriefAgent | {'title': 'Red Horizon', 'logline': 'A lone robot discovers a new home on Mars, but its existence threatens the fragile 
+2025-11-15T09:29:39.893662 | WriterAgent | Red Horizon  The crimson dust swirled around Axiom's ankles as it took its first steps on Martian soil. The robot's adva
+2025-11-15T09:29:39.895737 | WriterAgent | Red Horizon
+
+The crimson dust swirled around Axiom's ankles as it took its first steps on Martian soil. The robot's adva
+2025-11-15T09:29:41.087950 | VisualAgent | {'raw_visuals': 'Here are three image-generation prompts for key scenes from the story "Red Horizon":\n\n**1. First Step
+2025-11-15T09:29:41.091029 | VisualAgent | {'raw_visuals': 'Here are three image-generation prompts for key scenes from the story "Red Horizon":\n\n**1. First Step
+2025-11-15T09:29:41.821994 | ReviewerAgent | Validation failed: {'id': 'plot', 'description': 'The plot is engaging and raises interesting questions about the ethics of artificial intelligence, but some of the character arcs could be more developed and nuanced.'} is not of type 'string'
+2025-11-15T09:29:41.823926 | ReviewerAgent | {'error': 'validation_failed', 'message': "{'id': 'plot', 'description': 'The plot is engaging and raises interesting qu
+2025-11-15T09:29:48.188296 | PublisherAgent | [ERROR] Model call failed after 3 attempts: 429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/
+2025-11-15T09:29:48.189864 | PublisherAgent | [ERROR] Model call failed after 3 attempts: 429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/
+2025-11-15T09:42:50.171769 | BriefAgent | Red Planet Refuge
+2025-11-15T09:42:50.183934 | BriefAgent | {'title': 'Red Planet Refuge', 'logline': "A lone robot discovers a new home on Mars, but its existence is threatened by
+2025-11-15T09:42:51.582416 | WriterAgent | Red Planet Refuge  Axiom trudged through the crimson dust, its mechanical legs slogging against the relentless Martian w
+2025-11-15T09:42:51.582416 | WriterAgent | Red Planet Refuge
+
+Axiom trudged through the crimson dust, its mechanical legs slogging against the relentless Martian w
+2025-11-15T09:42:52.504588 | VisualAgent | {'raw_visuals': 'Here are three image-generation prompts for key scenes:\n\n```json\n[\n  {\n    "id": "rp1",\n    "scen
+2025-11-15T09:42:52.505635 | VisualAgent | {'raw_visuals': 'Here are three image-generation prompts for key scenes:\n\n```json\n[\n  {\n    "id": "rp1",\n    "scen
+2025-11-15T09:42:53.145296 | ReviewerAgent | The story of Red Planet Refuge has potential, but needs further development to reach its full potential. With some revis
+2025-11-15T09:42:53.146720 | ReviewerAgent | {'verdict': 'Needs Work', 'score': 72, 'issues': ["The story's pacing is uneven, with some scenes feeling rushed and oth
+2025-11-15T09:42:59.462713 | PublisherAgent | [ERROR] Model call failed after 3 attempts: 429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/
+2025-11-15T09:42:59.462713 | PublisherAgent | [ERROR] Model call failed after 3 attempts: 429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/
+2025-11-15T09:44:12.868384 | BriefAgent | Red Refuge
+2025-11-15T09:44:12.870390 | BriefAgent | {'title': 'Red Refuge', 'logline': 'A lone robot crash-lands on Mars, only to discover a makeshift home and a new sense 
+2025-11-15T09:44:14.368583 | WriterAgent | Red Refuge  Zeta-5's world went dark. One moment, the endless expanse of space stretched out before it like an infinity 
+2025-11-15T09:44:14.370591 | WriterAgent | Red Refuge
+
+Zeta-5's world went dark. One moment, the endless expanse of space stretched out before it like an infinity 
+2025-11-15T09:44:15.315034 | VisualAgent | {'raw_visuals': 'Here are 3 image-generation prompts for key scenes in the Red Refuge story:\n\n```json\n[\n  {\n    "id
+2025-11-15T09:44:15.315034 | VisualAgent | {'raw_visuals': 'Here are 3 image-generation prompts for key scenes in the Red Refuge story:\n\n```json\n[\n  {\n    "id
+2025-11-15T09:44:16.016227 | ReviewerAgent | Red Refuge is a compelling and visually rich story that explores the themes of self-discovery, belonging, and survival i
+2025-11-15T09:44:16.017228 | ReviewerAgent | {'verdict': 'Approved', 'score': 92, 'issues': ["The story could benefit from a clearer resolution of Zeta-5's initial c
+2025-11-15T09:44:23.806887 | PublisherAgent | # Red Refuge ### A Lone Robot's Quest for Belonging on Mars  [Image Placeholder: SR01 - Zeta-5's Crash Landing] #### The
+2025-11-15T09:44:23.807876 | PublisherAgent | # Red Refuge
+### A Lone Robot's Quest for Belonging on Mars
+
+[Image Placeholder: SR01 - Zeta-5's Crash Landing]
+#### The

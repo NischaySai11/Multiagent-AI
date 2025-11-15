@@ -67,9 +67,15 @@ def call_model(model, system_prompt, user_prompt, max_retries=3, timeout=30):
         except Exception as e:
             if attempt == max_retries:
                 return f"[ERROR] Model call failed after {attempt} attempts: {e}"
-            print(f"Retrying Groq model call ({attempt}/{max_retries}) after error: {e}")
-            time.sleep(backoff)
+            
+            # FIX: Mandatory cooldown for 429 rate limits
+            if "429" in str(e):
+                time.sleep(3)   # Wait 3 seconds if rate-limited
+            else:
+                time.sleep(backoff)
+            
             backoff *= 2
+
     return "[ERROR] Unexpected failure in call_model()"
 
 
@@ -111,8 +117,19 @@ except ImportError:
 # -------------------------------------------------------------------------
 # 4️⃣ Orchestration Flow
 # -------------------------------------------------------------------------
+# Simple global cache to prevent double execution
+_orch_cache = {}
+
 def orchestrate(idea_text):
     """Run full story-creation pipeline."""
+
+    global _orch_cache
+    key = idea_text.strip()
+
+    # --- If cached output exists, return it immediately ---
+    if key in _orch_cache:
+        return _orch_cache[key]
+
     results = {}
 
     # --- Brief Agent ---
@@ -142,7 +159,11 @@ def orchestrate(idea_text):
     log_step("PublisherAgent", str(publisher_out)[:120])
     results["publisher"] = publisher_out
 
+    # --- Save in cache ---
+    _orch_cache[key] = results
+
     return results
+
 
 
 # -------------------------------------------------------------------------
@@ -500,6 +521,16 @@ custom_css = """
     font-weight: 500;
 }
 
+/* FIX: Published Story text visibility */
+.gr-markdown, 
+.gr-markdown *, 
+.prose, 
+.prose * {
+    color: #111 !important;        /* Dark readable text */
+    background: transparent !important;
+}
+
+
 
 /* --- Gradio Component Overrides --- */
 button {
@@ -525,6 +556,9 @@ textarea.gr-box, .gr-json-display, .gr-markdown, .gr-textbox {
     padding: 1rem !important;
     box-shadow: none !important;
     min-height: 250px;
+    overflow-y: auto !important;
+    max-height: 400px !important;
+    resize: vertical !important;
 }
 
 .gr-tab-container {
@@ -625,10 +659,13 @@ def build_enhanced_ui():
                     
                     with gr.TabItem("📖 Full Draft"):
                         writer_out = gr.Textbox(
-                            label="Story", 
+                            label="Story",
                             show_label=False,
-                            lines=15
+                            lines=15,
+                            interactive=True,
+                            autoscroll=True
                         )
+
                     
                     with gr.TabItem("🎨 Visual Prompts (JSON)"):
                         visual_out = gr.JSON(label="Visual Prompts", show_label=False)
