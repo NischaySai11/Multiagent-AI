@@ -1,9 +1,8 @@
 """
-Orchestrator and shared utilities.
+Orchestrator and shared utilities (Modernized Gradio UI - compatible).
 
-This file contains the core Gradio application structure,
-API communication logic (using Groq as a mock target), 
-and the custom CSS for the professional UI design.
+This file avoids using gr.Card and Row.style so it works with older Gradio releases.
+Drop into your workspace and run with: python storycraft_modern.py
 """
 
 import os
@@ -14,7 +13,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 import gradio as gr
 
-# Load .env file for local use
+# Load .env
 load_dotenv()
 
 # --- Paths ---
@@ -25,18 +24,14 @@ LOG_FILE = os.path.join(BASE_DIR, "logs.txt")
 
 # --- API Key ---
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-# NOTE: Removed assert to allow UI to load even if key is missing,
-# but the model calls will fail gracefully.
 GROQ_BASE_URL = "https://api.groq.com/openai/v1"
 
 
-# -------------------------------------------------------------------------
-# 1️⃣ Model Caller (Placeholder/Mock Groq Integration)
-# -------------------------------------------------------------------------
-def call_model(model, system_prompt, user_prompt, max_retries=3, timeout=30):
+# ---------------- Model Caller ----------------
+def call_model(model, system_prompt, user_prompt, max_retries=4, timeout=30):
     """
-    Groq API (OpenAI-compatible) call with retry + backoff.
-    Returns model's text response or [ERROR] message.
+    Robust model caller with improved 429 handling and exponential backoff.
+    Returns model text or an error string starting with [ERROR].
     """
     if not GROQ_API_KEY:
         return "[ERROR] GROQ_API_KEY not set. Cannot call model."
@@ -65,23 +60,23 @@ def call_model(model, system_prompt, user_prompt, max_retries=3, timeout=30):
             content = data["choices"][0]["message"]["content"]
             return content
         except Exception as e:
+            err = str(e)
+            # If rate limited, wait longer and use linear increase per attempt
+            if "429" in err or "Too Many Requests" in err:
+                wait = 5 * attempt  # 5s, 10s, 15s, ...
+                time.sleep(wait)
+            else:
+                # exponential backoff for other errors
+                time.sleep(backoff)
+                backoff *= 2
+
             if attempt == max_retries:
                 return f"[ERROR] Model call failed after {attempt} attempts: {e}"
-            
-            # FIX: Mandatory cooldown for 429 rate limits
-            if "429" in str(e):
-                time.sleep(3)   # Wait 3 seconds if rate-limited
-            else:
-                time.sleep(backoff)
-            
-            backoff *= 2
 
     return "[ERROR] Unexpected failure in call_model()"
 
 
-# -------------------------------------------------------------------------
-# 2️⃣ Logging Utility
-# -------------------------------------------------------------------------
+# ---------------- Logging ----------------
 def log_step(agent_name, summary):
     """Append timestamped log entries to logs.txt."""
     ts = datetime.utcnow().isoformat()
@@ -93,19 +88,18 @@ def log_step(agent_name, summary):
         pass
 
 
-# -------------------------------------------------------------------------
-# 3️⃣ Import Agents (Mocked for safety/completeness)
-# -------------------------------------------------------------------------
+# ---------------- Agents (mock if missing) ----------------
 try:
-    # NOTE: This assumes an 'agents.py' file exists.
     from agents import brief_agent, writer_agent, visual_agent, reviewer_agent, publisher_agent
 except ImportError:
     print("WARNING: Could not import agents module. Agent functionality is mocked.")
     class MockAgent:
         def run(self, *args):
-            # Returns a valid JSON string for gr.JSON to prevent parsing errors
-            if "brief" in args:
-                 return '{"title": "Mock Story", "logline": "This is a mocked logline.", "themes": ["Mocking"]}'
+            if args and isinstance(args[0], str) and "brief" in args[0].lower():
+                return '{"title": "Mock Story", "logline": "This is a mocked logline.", "themes": ["Mocking"]}'
+            # simple simulated responses for other agents
+            if args and isinstance(args[0], dict) and args[0].get('story'):
+                return json.dumps({"status": "ok", "message": "Mock follow-up"})
             return json.dumps({"status": "mocked_output", "message": "Agent not implemented/imported"})
     brief_agent = MockAgent()
     writer_agent = MockAgent()
@@ -114,128 +108,84 @@ except ImportError:
     publisher_agent = MockAgent()
 
 
-# -------------------------------------------------------------------------
-# 4️⃣ Orchestration Flow
-# -------------------------------------------------------------------------
-# Simple global cache to prevent double execution
+# ---------------- Orchestration & Cache ----------------
+# global cache now stores per-agent results for instant reload
 _orch_cache = {}
 
-def orchestrate(idea_text):
-    """Run full story-creation pipeline."""
 
+def orchestrate(idea_text):
+    """Backward-compatible full-run fallback (keeps existing behavior)."""
     global _orch_cache
     key = idea_text.strip()
-
-    # --- If cached output exists, return it immediately ---
     if key in _orch_cache:
         return _orch_cache[key]
 
     results = {}
-
-    # --- Brief Agent ---
     brief_out = brief_agent.run(idea_text)
     log_step("BriefAgent", str(brief_out)[:120])
     results["brief"] = brief_out
 
-    # --- Writer Agent ---
     writer_out = writer_agent.run(brief_out)
     log_step("WriterAgent", str(writer_out)[:120])
     results["writer"] = writer_out
 
-    # --- Visual Agent ---
     visual_out = visual_agent.run(writer_out)
     log_step("VisualAgent", str(visual_out)[:120])
     results["visual"] = visual_out
 
-    # --- Reviewer Agent ---
     reviewer_input = {"brief": brief_out, "story": writer_out, "visuals": visual_out}
     reviewer_out = reviewer_agent.run(reviewer_input)
     log_step("ReviewerAgent", str(reviewer_out)[:120])
     results["reviewer"] = reviewer_out
 
-    # --- Publisher Agent ---
     publisher_input = {"brief": brief_out, "story": writer_out, "visuals": visual_out, "reviewer": reviewer_out}
     publisher_out = publisher_agent.run(publisher_input)
     log_step("PublisherAgent", str(publisher_out)[:120])
     results["publisher"] = publisher_out
 
-    # --- Save in cache ---
     _orch_cache[key] = results
-
     return results
 
 
-
-# -------------------------------------------------------------------------
-# 5️⃣ UI Components (HTML Generation)
-# -------------------------------------------------------------------------
+# ---------------- UI small components ----------------
 def create_progress_tracker():
-    """Create a beautiful progress tracker HTML structure."""
-    return gr.HTML("""
-    <div class="progress-container">
-        <div class="progress-bar">
-            <div class="progress-step" id="step-brief">
-                <div class="step-icon">📋</div>
-                <div class="step-label">Brief</div>
-                <div class="step-status">Pending</div>
-            </div>
-            <div class="progress-step" id="step-writer">
-                <div class="step-icon">✍️</div>
-                <div class="step-label">Writer</div>
-                <div class="step-status">Pending</div>
-            </div>
-            <div class="progress-step" id="step-visual">
-                <div class="step-icon">🎨</div>
-                <div class="step-label">Visual</div>
-                <div class="step-status">Pending</div>
-            </div>
-            <div class="progress-step" id="step-reviewer">
-                <div class="step-icon">✅</div>
-                <div class="step-label">Review</div>
-                <div class="step-status">Pending</div>
-            </div>
-            <div class="progress-step" id="step-publisher">
-                <div class="step-icon">📰</div>
-                <div class="step-label">Publish</div>
-                <div class="step-status">Pending</div>
-            </div>
-        </div>
-    </div>
-    """)
+    """Return initial progress HTML using the update_progress helper."""
+    # generate the progress HTML string and return a Gradio HTML component
+    html = update_progress("brief", "pending")
+    return gr.HTML(html)
 
 
 def create_metrics_display():
-    """Create metrics display HTML structure."""
     return gr.HTML("""
-    <div class="metrics-container">
-        <div class="metric-card">
-            <div class="metric-value" id="word-count">0</div>
-            <div class="metric-label">Words</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-value" id="char-count">0</div>
-            <div class="metric-label">Characters</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-value" id="read-time">0 min</div>
-            <div class="metric-label">Reading Time</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-value" id="quality-score">-</div>
-            <div class="metric-label">Quality Score</div>
-        </div>
+    <div class="metrics-row">
+        <div class="metric"><div id="m-words">0</div><div class="m-label">Words</div></div>
+        <div class="metric"><div id="m-chars">0</div><div class="m-label">Chars</div></div>
+        <div class="metric"><div id="m-time">0 min</div><div class="m-label">Read</div></div>
+        <div class="metric"><div id="m-score">-</div><div class="m-label">Quality</div></div>
     </div>
     """)
 
 
-# -------------------------------------------------------------------------
-# 6️⃣ Pipeline Execution Logic (with UI updates)
-# -------------------------------------------------------------------------
+# ---------------- Helper: render combined progress + console ----------------
+def render_progress_with_console(step, status, console_lines):
+    """Return HTML containing both the visual tracker and a small console log under it."""
+    tracker = update_progress(step, status)
+    console_html = '<div class="agent-console">'
+    for ln in console_lines[-12:]:
+        console_html += f'<div class="console-line">{ln}</div>'
+    console_html += '</div>'
+    return tracker + console_html
+
+
+# ---------------- Pipeline execution (sequential with live updates) ----------------
 def run_pipeline_with_progress(idea):
-    """Runs the agent pipeline and yields intermediate UI updates."""
-    
+    """Runs agents sequentially, yielding live UI updates after each step.
+
+    Outputs (same order as UI bindings):
+    progress_html, brief_out, writer_out, visual_out, reviewer_out, publisher_out, metrics_data
+    """
+
     def fmt(x):
-        """Safely formats output for Gradio components."""
         if x is None: return "{}"
         if isinstance(x, dict): return json.dumps(x, indent=2)
         if isinstance(x, str):
@@ -247,477 +197,482 @@ def run_pipeline_with_progress(idea):
                 return x
         return json.dumps(x, indent=2)
 
+    console = []
+    key = idea.strip()
 
-    try:
-        # Initialize UI state
-        yield update_progress("brief", "running"), "{}", "", "{}", "{}", "", ""
-        
-        out = orchestrate(idea)
-        
-        # Calculate metrics
-        story_text = out.get("writer", "") if isinstance(out.get("writer"), str) else ""
-        word_count = len(story_text.split())
+    # --- If fully cached, short-circuit with instant return ---
+    if key and key in _orch_cache:
+        results = _orch_cache[key]
+        console.append(f"Loaded from cache for idea: '{key}'")
+        brief_f = fmt(results.get('brief'))
+        writer_f = fmt(results.get('writer'))
+        visual_f = fmt(results.get('visual'))
+        reviewer_f = fmt(results.get('reviewer'))
+        publisher_f = fmt(results.get('publisher'))
+
+        # metrics
+        story_text = results.get('writer', '') if isinstance(results.get('writer'), str) else ''
+        word_count = len(story_text.split()) if story_text else 0
         char_count = len(story_text)
-        read_time = f"{word_count // 200} min"
-        
-        # Get quality score
-        quality_score = "N/A"
-        if "reviewer" in out and isinstance(out["reviewer"], dict):
-            quality_score = out["reviewer"].get("score", "N/A")
-        
-        # Format outputs
-        brief_formatted = fmt(out.get("brief"))
-        writer_formatted = fmt(out.get("writer"))
-        visual_formatted = fmt(out.get("visual"))
-        reviewer_formatted = fmt(out.get("reviewer"))
-        publisher_formatted = fmt(out.get("publisher")) 
-        
-        # Final update
-        progress_html = update_progress("publisher", "complete")
-        
-        yield (progress_html, brief_formatted, writer_formatted, visual_formatted, 
-               reviewer_formatted, publisher_formatted, 
-               f"{word_count},{char_count},{read_time},{quality_score}")
-        
+        read_time = f"{(word_count // 200) or 1} min"
+        quality_score = 'N/A'
+        if isinstance(results.get('reviewer'), dict):
+            quality_score = results['reviewer'].get('score', 'N/A')
+
+        progress_html = render_progress_with_console('publisher', 'complete', console)
+        yield (progress_html, brief_f, writer_f, visual_f, reviewer_f, publisher_f, f"{word_count},{char_count},{read_time},{quality_score}")
+        return
+
+    # Initialize UI: Brief running
+    console.append("Starting pipeline...")
+    console.append("Brief Agent: queued")
+    yield (render_progress_with_console('brief', 'running', console), "{}", "", "{}", "{}", "", "")
+
+    # --- Brief ---
+    try:
+        brief_out = brief_agent.run(idea)
+        log_step("BriefAgent", str(brief_out)[:120])
+        console.append("Brief Agent: complete")
+        brief_f = fmt(brief_out)
     except Exception as e:
-        error_msg = f"[ERROR] Pipeline Exception: {e}"
-        error_html = update_progress("error", "error")
-        json_error_output = json.dumps({"status": "pipeline_error", "message": error_msg}, indent=2)
-        
-        yield (error_html, json_error_output, error_msg, json_error_output, 
-               json_error_output, error_msg, "0,0,0 min,N/A")
+        brief_out = f"[ERROR] BriefAgent failed: {e}"
+        brief_f = fmt(brief_out)
+        console.append(brief_out)
+        # stop pipeline and show error
+        yield (render_progress_with_console('brief', 'error', console), brief_f, "", "{}", "{}", "", "0,0,0 min,N/A")
+        return
+
+    # Update: writer queued
+    console.append("Writer Agent: queued")
+    yield (render_progress_with_console('writer', 'running', console), brief_f, "", "{}", "{}", "", "")
+
+    # --- Writer ---
+    try:
+        writer_out = writer_agent.run(brief_out)
+        log_step("WriterAgent", str(writer_out)[:120])
+        console.append("Writer Agent: complete")
+        writer_f = fmt(writer_out)
+    except Exception as e:
+        writer_out = f"[ERROR] WriterAgent failed: {e}"
+        writer_f = fmt(writer_out)
+        console.append(writer_out)
+        yield (render_progress_with_console('writer', 'error', console), brief_f, writer_f, "{}", "{}", "", "0,0,0 min,N/A")
+        return
+
+    # Update: visual queued
+    console.append("Visual Agent: queued")
+    yield (render_progress_with_console('visual', 'running', console), brief_f, writer_f, "{}", "{}", "", "")
+
+    # --- Visual ---
+    try:
+        visual_out = visual_agent.run(writer_out)
+        log_step("VisualAgent", str(visual_out)[:120])
+        console.append("Visual Agent: complete")
+        visual_f = fmt(visual_out)
+    except Exception as e:
+        visual_out = f"[ERROR] VisualAgent failed: {e}"
+        visual_f = fmt(visual_out)
+        console.append(visual_out)
+        yield (render_progress_with_console('visual', 'error', console), brief_f, writer_f, visual_f, "{}", "", "0,0,0 min,N/A")
+        return
+
+    # Update: reviewer queued
+    console.append("Reviewer Agent: queued")
+    yield (render_progress_with_console('reviewer', 'running', console), brief_f, writer_f, visual_f, "{}", "", "")
+
+    # --- Reviewer ---
+    try:
+        reviewer_input = {"brief": brief_out, "story": writer_out, "visuals": visual_out}
+        reviewer_out = reviewer_agent.run(reviewer_input)
+        log_step("ReviewerAgent", str(reviewer_out)[:120])
+        console.append("Reviewer Agent: complete")
+        reviewer_f = fmt(reviewer_out)
+    except Exception as e:
+        reviewer_out = f"[ERROR] ReviewerAgent failed: {e}"
+        reviewer_f = fmt(reviewer_out)
+        console.append(reviewer_out)
+        yield (render_progress_with_console('reviewer', 'error', console), brief_f, writer_f, visual_f, reviewer_f, "", "0,0,0 min,N/A")
+        return
+
+    # Update: publisher queued
+    console.append("Publisher Agent: queued")
+    yield (render_progress_with_console('publisher', 'running', console), brief_f, writer_f, visual_f, reviewer_f, "", "")
+
+    # --- Publisher ---
+    try:
+        publisher_input = {"brief": brief_out, "story": writer_out, "visuals": visual_out, "reviewer": reviewer_out}
+        publisher_out = publisher_agent.run(publisher_input)
+        # If publisher_agent internally calls call_model and hits 429, call_model will backoff accordingly
+        log_step("PublisherAgent", str(publisher_out)[:120])
+        console.append("Publisher Agent: complete")
+        publisher_f = fmt(publisher_out)
+    except Exception as e:
+        publisher_out = f"[ERROR] PublisherAgent failed: {e}"
+        publisher_f = fmt(publisher_out)
+        console.append(publisher_out)
+        yield (render_progress_with_console('publisher', 'error', console), brief_f, writer_f, visual_f, reviewer_f, publisher_f, "0,0,0 min,N/A")
+        return
+
+    # --- Save full results to cache (per-key) ---
+    try:
+        results = {"brief": brief_out, "writer": writer_out, "visual": visual_out, "reviewer": reviewer_out, "publisher": publisher_out}
+        if key:
+            _orch_cache[key] = results
+            console.append(f"Cached results for idea: '{key}'")
+    except Exception:
+        pass
+
+    # Compute final metrics
+    story_text = writer_out if isinstance(writer_out, str) else ''
+    word_count = len(story_text.split()) if story_text else 0
+    char_count = len(story_text)
+    read_time = f"{(word_count // 200) or 1} min"
+    quality_score = 'N/A'
+    try:
+        if isinstance(reviewer_out, dict):
+            quality_score = reviewer_out.get('score', 'N/A')
+        elif isinstance(reviewer_out, str):
+            try:
+                rj = json.loads(reviewer_out)
+                quality_score = rj.get('score', 'N/A')
+            except Exception:
+                quality_score = 'N/A'
+    except Exception:
+        quality_score = 'N/A'
+
+    # Final render
+    progress_html = render_progress_with_console('publisher', 'complete', console)
+    yield (progress_html, fmt(brief_out), fmt(writer_out), fmt(visual_out), fmt(reviewer_out), fmt(publisher_out), f"{word_count},{char_count},{read_time},{quality_score}")
 
 
+# ---------------- progress HTML builder (keeps original appearance) ----------------
 def update_progress(step, status):
-    """Updates progress tracker HTML with current step status."""
     steps = ["brief", "writer", "visual", "reviewer", "publisher"]
-    html = '<div class="progress-container"><div class="progress-bar">'
-    
+    html = '<div class="progress-track">'
     for s in steps:
         icon = {"brief": "📋", "writer": "✍️", "visual": "🎨", "reviewer": "✅", "publisher": "📰"}.get(s, "❓")
-        status_icon = "🟡"
+        status_icon = "•"
         status_text = "Pending"
-        
+        cls = "pending"
         if s == step:
             if status == "running":
-                status_icon = "🟠"
-                status_text = "Running..."
+                status_icon = "↻"
+                status_text = "Running"
+                cls = "running"
             elif status == "complete":
-                status_icon = "🟢"
+                status_icon = "✓"
                 status_text = "Complete"
+                cls = "complete"
             elif status == "error":
-                status_icon = "🔴"
+                status_icon = "✖"
                 status_text = "Error"
+                cls = "error"
         elif steps.index(s) < steps.index(step) and status != "error":
-            status_icon = "🟢"
+            status_icon = "✓"
             status_text = "Complete"
-        
-        # If any step fails, subsequent steps show error
+            cls = "complete"
         if status == "error" and steps.index(s) > steps.index(step):
-            status_icon = "🔴"
+            status_icon = "✖"
             status_text = "Error"
-        
-        html += f"""
-            <div class="progress-step {status.lower()}" id="step-{s}">
-                <div class="step-icon">{icon}</div>
-                <div class="step-label">{s.title()}</div>
-                <div class="step-status">{status_icon} {status_text}</div>
-            </div>
-        """
-    
-    html += '</div></div>'
+            cls = "error"
+
+        # small bubble for substatus
+        sub = "Idle"
+        if s == step and status == 'running':
+            sub = 'Running...'
+        elif cls == 'complete':
+            sub = 'Complete'
+        elif cls == 'error':
+            sub = 'Error'
+
+        html += f'<div class="p-step {cls}" id="ps-{s}">'
+        html += f'<div class="p-ic">{icon}</div>'
+        html += f'<div class="p-title">{s.title()}</div>'
+        html += f'<div class="p-sub">{sub}</div>'
+        html += '</div>'
+
+    html += '</div>'
     return html
 
 
-# -------------------------------------------------------------------------
-# 7️⃣ Custom CSS (Professional Styling)
-# -------------------------------------------------------------------------
+# ---------------- Modern CSS (compatible) ----------------
 custom_css = """
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
 
-/* General Gradio Overrides */
-.gradio-container {
-    max-width: 1400px !important;
-    margin: 0 auto !important;
-    font-family: 'Inter', sans-serif;
-    background-color: #f8f9fa; /* Light grey background */
-    padding: 0;
+:root{
+  --bg: #f7f7f6;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --accent: #5b6cff;
+  --radius: 12px;
+}
+body, .gradio-container {
+  background: var(--bg) !important;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
 }
 
-/* --- HERO HEADER --- */
-.hero-header {
-    text-align: center;
-    padding: 5rem 0;
-    background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); /* Soft gradient */
-    border-radius: 12px;
-    margin-bottom: 2rem;
-    color: #333;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+/* TOPBAR - full-width, stable */
+.topbar{
+  width:100% !important;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  padding:14px 22px;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  margin-bottom: 14px;
+  box-sizing:border-box;
+  gap:14px;
+}
+.topbar-left { display:flex; align-items:center; gap:10px }
+.brand { font-weight:700; font-size:1.15rem; color:#0f1724; letter-spacing: -0.2px; display:flex; align-items:center; gap:10px; }
+
+/* NEW: colorful compact logo and gradient title for StoryCraft */
+.brand .logo{
+  width:42px;
+  height:42px;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: linear-gradient(45deg, #ff7aa2 0%, #7c6bff 50%, #3ad1c8 100%);
+  color: white;
+  font-weight:800;
+  box-shadow: 0 6px 18px rgba(124,107,255,0.12);
+  font-size:14px;
+}
+.brand .title{
+  background: linear-gradient(90deg, #ef4444 0%, #f97316 40%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight:800;
+  font-size:1.05rem;
+}
+.sub { color:var(--muted); font-size:0.9rem }
+
+/* card */
+.card{ background: var(--card); border-radius: var(--radius); padding: 14px; box-shadow: 0 6px 18px rgba(17,24,39,0.06); border: 1px solid rgba(16,24,40,0.04); box-sizing:border-box; }
+
+/* Agent buttons */
+.agent-list{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px }
+.agent-btn{
+  background: transparent;
+  border: 1px solid rgba(16,24,40,0.06);
+  padding:8px 12px;
+  border-radius: 999px;
+  font-weight:600;
+  cursor:pointer;
+  transition: all 0.18s;
+}
+.agent-btn:hover{ transform: translateY(-3px); box-shadow: 0 8px 18px rgba(91,108,255,0.08); border-color: rgba(91,108,255,0.14) }
+
+/* PROGRESS TRACK - force horizontal layout and stable sizing */
+.progress-track{
+  width:100% !important;
+  display:flex !important;
+  flex-direction:row !important;
+  gap:12px !important;
+  align-items:stretch !important;
+  justify-content:space-between !important;
+  min-height:90px;
+  box-sizing:border-box;
 }
 
-.hero-header h1 {
-    font-size: 3.5rem;
-    font-weight: 800;
-    margin-bottom: 0.5rem;
-    background: linear-gradient(45deg, #667eea, #764ba2); /* Primary text gradient */
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
+.p-step{ flex:1 1 0; min-width:120px; max-width:22%; border-radius:10px; padding:12px 10px; text-align:center; background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(250,250,250,0.95)); border:1px solid rgba(16,24,40,0.03); box-sizing:border-box }
+.p-step.running{ border-color: rgba(91,108,255,0.12) }
+.p-step.complete{ background: rgba(34,197,94,0.06); border-color: rgba(34,197,94,0.12) }
+.p-step.error{ background: rgba(244,63,94,0.06); border-color: rgba(244,63,94,0.12) }
+.p-ic{ font-size:18px }
+.p-title{ font-weight:700; font-size:0.95rem; color:#111 }
+.p-sub{ font-size:0.78rem; color:var(--muted); margin-top:6px }
 
-.hero-header p {
-    font-size: 1.5rem;
-    opacity: 0.8;
-    font-weight: 500;
-}
+/* Progress compact small boxes (used for initial static tracker) */
+.progress-compact{ display:flex; gap:8px; align-items:center; justify-content:space-between; }
+.step-box{ background:var(--card); border-radius:8px; padding:8px 10px; display:flex; flex-direction:column; align-items:center; min-width:80px; box-shadow: 0 4px 12px rgba(2,6,23,0.04); border:1px solid rgba(16,24,40,0.03) }
+.step-title{ font-weight:700; font-size:0.9rem; margin-top:6px }
+.step-sub{ font-size:0.75rem; color:var(--muted) }
 
-/* --- INPUT/AGENT COLUMN --- */
-.input-column {
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    height: 100%;
-}
+/* ensure the progress-area has its own white background so text is readable */
+.output-column .card .progress-compact, .output-column .card .progress-track { background: transparent }
 
-/* --- OUTPUT/PROGRESS COLUMN --- */
-.output-column {
-    padding: 0 0 0 1rem; /* Adjust padding to match design */
-}
+/* Metrics */
+.metrics-row{ display:flex; gap:12px; margin-top:12px }
+.metric{ background:var(--card); padding:10px 12px; border-radius:10px; text-align:center; flex:1; border:1px solid rgba(16,24,40,0.04) }
+.metric > div:first-child{ font-weight:700; font-size:1.25rem; color:var(--accent) }
+.m-label{ color:var(--muted); font-size:0.85rem }
 
-/* --- AGENT CARDS (Styled list) --- */
-.agent-list h3 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #2d3748;
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 0.5rem;
-}
+textarea.gr-box, .gr-json-display, .gr-markdown, .gr-textbox{ border-radius:10px !important; border:1px solid rgba(16,24,40,0.04) !important; padding:12px !important; background: var(--card) !important }
 
-.agent-card {
-    display: flex;
-    align-items: center;
-    background: #fcfcfc;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    margin-bottom: 0.5rem;
-    border: 1px solid #eee;
-    transition: all 0.2s ease;
-}
+button{ background: var(--accent) !important; color: white !important; padding: 10px 16px !important; border-radius: 10px !important; border:none !important; font-weight:700 }
+button.secondary{ background:transparent !important; color:var(--accent) !important; border:1px solid rgba(91,108,255,0.12) !important }
 
-.agent-card:hover {
-    background: #e0e7ff;
-    border-color: #667eea;
-    cursor: pointer;
-}
+/* agent console */
+.agent-console{ margin-top:12px; background: #ffffff; color: #e6eef8; padding:10px; border-radius:8px; max-height:180px; overflow:auto; font-family: monospace; font-size:12px }
+.console-line{ padding:2px 0 }
 
-.agent-icon {
-    font-size: 1.2rem;
-    margin-right: 1rem;
-    color: #667eea;
-}
-
-.agent-name {
-    font-weight: 600;
-    color: #333;
-    flex-grow: 1;
-}
-
-.agent-status {
-    font-size: 0.85rem;
-    font-weight: 500;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    background: #e2e8f0;
-    color: #718096;
-}
-
-/* --- PROGRESS TRACKER --- */
-.progress-container {
-    margin: 2rem 0;
-    padding: 1rem;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    border: 1px solid #e2e8f0;
-}
-
-.progress-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.progress-step {
-    text-align: center;
-    flex: 1;
-    padding: 0.5rem;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-}
-
-.progress-step.running {
-    background: #fff3cd;
-    border-color: #ffc107;
-    transform: scale(1.02);
-}
-
-.progress-step.complete {
-    background: #d4edda;
-    border-color: #28a745;
-}
-
-.progress-step.error {
-    background: #f8d7da;
-    border-color: #dc3545;
-}
-
-.step-icon {
-    font-size: 1.5rem;
-    margin-bottom: 0.25rem;
-}
-
-.step-label {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: #2d3748;
-}
-
-.step-status {
-    font-size: 0.75rem;
-    color: #718096;
-}
-
-/* --- METRICS DISPLAY --- */
-.metrics-container {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.metric-card {
-    background: white;
-    padding: 1rem;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    border: 1px solid #e2e8f0;
-}
-
-.metric-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #667eea; /* Highlighted primary color */
-    margin-bottom: 0.25rem;
-}
-
-.metric-label {
-    font-size: 0.8rem;
-    color: #718096;
-    font-weight: 500;
-}
-
-/* FIX: Published Story text visibility */
-.gr-markdown, 
-.gr-markdown *, 
-.prose, 
+/* Fix for gr-markdown/prose text visibility - keep color but let background be default */
+.gr-markdown,
+.gr-markdown *,
+.prose,
 .prose * {
-    color: #111 !important;        /* Dark readable text */
-    background: transparent !important;
+    color: #111 !important;
 }
 
-
-
-/* --- Gradio Component Overrides --- */
-button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    border: none !important;
-    color: white !important;
-    font-weight: 600 !important;
-    padding: 1rem 2rem !important;
-    border-radius: 8px !important;
-    transition: all 0.3s ease !important;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-}
-
-button:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4) !important;
-}
-
-textarea.gr-box, .gr-json-display, .gr-markdown, .gr-textbox {
-    border-radius: 8px !important;
-    border: 1px solid #e2e8f0 !important;
+/* Only fix dark blocks inside the Published tab */
+#tab-Published pre,
+#tab-Published code,
+#tab-Published .gr-code,
+#tab-Published .gr-code *,
+#tab-Published .gr-json-display,
+#tab-Published .gr-json-display * {
     background: #ffffff !important;
-    padding: 1rem !important;
-    box-shadow: none !important;
-    min-height: 250px;
-    overflow-y: auto !important;
-    max-height: 400px !important;
-    resize: vertical !important;
+    color: #111111 !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(0,0,0,0.1) !important;
 }
 
-.gr-tab-container {
-    border: none !important;
-}
+/* Prevent early stacking by ensuring containers reserve space */
+.progress-track, .progress-compact { min-height: 70px }
 
-.gr-tabs {
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    padding: 1rem;
-    background: white;
-}
+@media (max-width:900px){ .metrics-row{ flex-direction:column } .progress-track{ flex-direction:column; gap:8px } }
 """
 
 
-# -------------------------------------------------------------------------
-# 8️⃣ Launch Enhanced App
-# -------------------------------------------------------------------------
+# ---------------- agent info helpers ----------------
+def brief_info():
+    return "**Brief Agent** — extracts core logline & themes. (Coordinating with Writer)."
+
+def writer_info():
+    return "**Writer Agent** — drafts scenes and dialog. (Uses Brief output)."
+
+def visual_info():
+    return "**Visual Agent** — creates visual prompt specs for concept art & storyboards."
+
+def reviewer_info():
+    return "**Reviewer Agent** — scores and suggests improvements. (Coordinates with Writer & Visual)."
+
+def publisher_info():
+    return "**Publisher Agent** — prepares final publishable output and metadata."
+
+
+# ---------------- Build UI (compat-friendly) ----------------
 def build_enhanced_ui():
-    with gr.Blocks(
-        title="StoryCraft AI Studio 🚀", 
-        css=custom_css
-    ) as demo:
-        
-        # --- 1. Hero Header ---
-        gr.HTML("""
-        <div class="hero-header">
-            <h1>StoryCraft AI Studio 🚀</h1>
-            <p>Unleash the full power of multi-agent AI to create professional stories and visual concepts instantly.</p>
-        </div>
-        """)
-        
+    with gr.Blocks(title="StoryCraft — Modern", css=custom_css) as demo:
+
+        # Topbar
+        with gr.Row(elem_classes="topbar"):
+            gr.Markdown(
+                "<div style='display:flex;gap:8px;align-items:center;'>"
+                "<div class='brand'>"
+                  "<div class='logo'>SC</div>"
+                  "<div class='title'>StoryCraft</div>"
+                "</div>"
+                "<div class='sub'>multi-agent story studio</div>"
+                "</div>"
+            )
+
         with gr.Row():
-            # --- Left Column: Input and Agent List ---
-            with gr.Column(scale=2, elem_classes="input-column"):
-                
-                # Input Section
-                idea = gr.Textbox(
-                    lines=4,
-                    placeholder="✨ Enter your story idea...\nExample: 'A lonely robot on Mars discovers friendship with a curious alien creature while exploring the red planet's ancient ruins'",
-                    label="Your Story Idea"
-                )
-                
-                generate_btn = gr.Button(
-                    "🚀 Start Full Pipeline Generation", 
-                    variant="primary", 
-                    scale=1
-                )
-                
-                # Agent List
-                gr.HTML("""<div class="agent-list"><h3>Pipeline Agents</h3></div>""")
-                gr.HTML("""
-                <div class="agent-card">
-                    <span class="agent-icon">📋</span>
-                    <span class="agent-name">Brief Agent</span>
-                    <span class="agent-status">Ready</span>
-                </div>
-                <div class="agent-card">
-                    <span class="agent-icon">✍️</span>
-                    <span class="agent-name">Writer Agent</span>
-                    <span class="agent-status">Ready</span>
-                </div>
-                <div class="agent-card">
-                    <span class="agent-icon">🎨</span>
-                    <span class="agent-name">Visual Agent</span>
-                    <span class="agent-status">Ready</span>
-                </div>
-                <div class="agent-card">
-                    <span class="agent-icon">✅</span>
-                    <span class="agent-name">Reviewer Agent</span>
-                    <span class="agent-status">Ready</span>
-                </div>
-                <div class="agent-card">
-                    <span class="agent-icon">📰</span>
-                    <span class="agent-name">Publisher Agent</span>
-                    <span class="agent-status">Ready</span>
-                </div>
-                """)
+            # Left column (use Column as card container)
+            with gr.Column(scale=2, min_width=320, elem_classes="input-column"):
+                # Use Column as card wrapper
+                with gr.Column(elem_classes="card"):
+                    gr.Markdown("**Your Story Idea**")
+                    idea = gr.Textbox(lines=4, placeholder="Enter a short idea...", label=None)
 
-            # --- Right Column: Progress, Metrics, and Output Tabs ---
-            with gr.Column(scale=3, elem_classes="output-column"):
-                
-                gr.HTML("<h3>Progress Tracker</h3>")
-                progress_html = create_progress_tracker()
-                
-                gr.HTML("<h3>Story Metrics</h3>")
-                metrics_html = create_metrics_display()
-                
-                gr.HTML("<h3>Final Output</h3>")
-                
-                # Output Tabs
-                with gr.Tabs() as tabs:
-                    with gr.TabItem("📰 Final Published Story"):
-                        published_out = gr.Markdown(label="Published Story", show_label=False)
-                    
-                    with gr.TabItem("📋 Story Brief (JSON)"):
-                        brief_out = gr.JSON(label="Brief", show_label=False)
-                    
-                    with gr.TabItem("📖 Full Draft"):
-                        writer_out = gr.Textbox(
-                            label="Story",
-                            show_label=False,
-                            lines=15,
-                            interactive=True,
-                            autoscroll=True
-                        )
+                    with gr.Row():
+                        generate_btn = gr.Button("Generate Full Pipeline")
+                        quick_btn = gr.Button("Quick Draft", elem_classes="secondary")
 
-                    
-                    with gr.TabItem("🎨 Visual Prompts (JSON)"):
-                        visual_out = gr.JSON(label="Visual Prompts", show_label=False)
-                    
-                    with gr.TabItem("✅ Quality Review (JSON)"):
-                        reviewer_out = gr.JSON(label="Review", show_label=False)
-        
-        # Hidden output for metrics (used for dynamic updates)
+                    gr.Markdown("<div style='margin-top:10px; font-weight:700;'>Agents</div>")
+
+                    with gr.Row(elem_classes="agent-list"):
+                        brief_btn = gr.Button("📋 Brief", elem_id="btn-brief", elem_classes="agent-btn")
+                        writer_btn = gr.Button("✍️ Writer", elem_classes="agent-btn")
+                        visual_btn = gr.Button("🎨 Visual", elem_classes="agent-btn")
+                        reviewer_btn = gr.Button("✅ Review", elem_classes="agent-btn")
+                        publisher_btn = gr.Button("📰 Publish", elem_classes="agent-btn")
+
+                    agent_info = gr.Markdown("_Click an agent to see what it does._", elem_classes="card", elem_id="agent-info")
+
+            # Right column
+            with gr.Column(scale=3, min_width=520, elem_classes="output-column"):
+                with gr.Column(elem_classes="card"):
+                    gr.Markdown("**Progress**")
+                    progress_html = create_progress_tracker()
+                    gr.Markdown("**Metrics**")
+                    metrics_html = create_metrics_display()
+
+                with gr.Column(elem_classes="card", ):
+                    with gr.Tabs():
+                        with gr.TabItem("Published"):
+                            published_out = gr.Markdown("", label="Published Story")
+                            gen_note_pub = gr.Markdown("_Generated by Publisher Agent (coordinated with Reviewer & Writer)_")
+
+                        with gr.TabItem("Brief (JSON)"):
+                            brief_out = gr.JSON(label="Brief JSON")
+                            gen_note_brief = gr.Markdown("_Generated by Brief Agent_")
+
+                        with gr.TabItem("Draft"):
+                            writer_out = gr.Textbox(lines=12, show_label=False)
+                            gen_note_writer = gr.Markdown("_Generated by Writer Agent (uses Brief)_")
+
+                        with gr.TabItem("Visuals"):
+                            visual_out = gr.JSON(label="Visual Prompts")
+                            gen_note_visual = gr.Markdown("_Generated by Visual Agent_")
+
+                        with gr.TabItem("Review"):
+                            reviewer_out = gr.JSON(label="Review Output")
+                            gen_note_review = gr.Markdown("_Generated by Reviewer Agent_")
+
+        # Hidden metrics holder
         metrics_data = gr.Textbox(visible=False)
-        
-        # --- Event Handling ---
+
+        # Agent buttons -> agent info
+        brief_btn.click(fn=brief_info, inputs=[], outputs=[agent_info])
+        writer_btn.click(fn=writer_info, inputs=[], outputs=[agent_info])
+        visual_btn.click(fn=visual_info, inputs=[], outputs=[agent_info])
+        reviewer_btn.click(fn=reviewer_info, inputs=[], outputs=[agent_info])
+        publisher_btn.click(fn=publisher_info, inputs=[], outputs=[agent_info])
+
+        # Quick pipeline: returns brief & writer quickly (sequential but no heavy waits)
+        def quick_pipeline(idea_text):
+            key = idea_text.strip()
+            if key and key in _orch_cache:
+                res = _orch_cache[key]
+                brief_f = json.dumps(res.get('brief'), indent=2) if not isinstance(res.get('brief'), str) else res.get('brief')
+                writer_f = json.dumps(res.get('writer'), indent=2) if not isinstance(res.get('writer'), str) else res.get('writer')
+                return update_progress('writer', 'complete'), brief_f, writer_f, json.dumps({}, indent=2), json.dumps({}, indent=2), json.dumps({}, indent=2), f"{len(writer_f.split())},{len(writer_f)},{(len(writer_f.split())//200) or 1} min,N/A"
+
+            # fallback to lightweight sequential calls
+            b = brief_agent.run(idea_text)
+            w = writer_agent.run(b)
+            brief_f = json.dumps(b, indent=2) if not isinstance(b, str) else b
+            writer_f = json.dumps(w, indent=2) if not isinstance(w, str) else w
+            return update_progress('writer', 'complete'), brief_f, writer_f, json.dumps({}, indent=2), json.dumps({}, indent=2), json.dumps({}, indent=2), f"{len(writer_f.split())},{len(writer_f)},{(len(writer_f.split())//200) or 1} min,N/A"
+
+        quick_btn.click(fn=quick_pipeline, inputs=[idea], outputs=[progress_html, brief_out, writer_out, visual_out, reviewer_out, published_out, metrics_data])
+
+        # Full generate uses streaming/sequential pipeline
         generate_btn.click(
             fn=run_pipeline_with_progress,
             inputs=[idea],
-            outputs=[
-                progress_html, brief_out, writer_out, visual_out, 
-                reviewer_out, published_out, metrics_data
-            ]
+            outputs=[progress_html, brief_out, writer_out, visual_out, reviewer_out, published_out, metrics_data]
         )
-        
-        # Update metrics when data changes
+
+        # Metrics update callback
         def update_metrics(metrics_str):
             if metrics_str:
                 word_count, char_count, read_time, quality_score = metrics_str.split(",")
-                # Return the HTML structure populated with live data
-                return f"""
-                <div class="metrics-container">
-                    <div class="metric-card">
-                        <div class="metric-value">{word_count}</div>
-                        <div class="metric-label">Words</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-value">{char_count}</div>
-                        <div class="metric-label">Characters</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-value">{read_time}</div>
-                        <div class="metric-label">Reading Time</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-value">{quality_score}</div>
-                        <div class="metric-label">Quality Score</div>
-                    </div>
-                </div>
-                """
+                return f"""<div class='metrics-row'>
+<div class='metric'><div>{word_count}</div><div class='m-label'>Words</div></div>
+<div class='metric'><div>{char_count}</div><div class='m-label'>Chars</div></div>
+<div class='metric'><div>{read_time}</div><div class='m-label'>Read Time</div></div>
+<div class='metric'><div>{quality_score}</div><div class='m-label'>Quality</div></div>
+</div>"""
             return create_metrics_display()
-        
-        metrics_data.change(
-            fn=update_metrics,
-            inputs=[metrics_data],
-            outputs=[metrics_html]
-        )
+
+        metrics_data.change(fn=update_metrics, inputs=[metrics_data], outputs=[metrics_html])
 
     return demo
 
@@ -725,9 +680,4 @@ def build_enhanced_ui():
 if __name__ == "__main__":
     demo = build_enhanced_ui()
     demo.queue()
-    demo.launch(
-        show_api=False,
-        share=False,
-        server_name="127.0.0.1",
-        server_port=7860
-    )
+    demo.launch(show_api=False, share=False, server_name="127.0.0.1", server_port=7860)

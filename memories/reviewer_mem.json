@@ -1,11 +1,22 @@
 {
-  "verdict": "Approved",
-  "score": 92,
-  "issues": [
-    "The story could benefit from a clearer resolution of Zeta-5's initial conflict, potentially exploring its relationship with its creators or the implications of its newfound sense of purpose.",
-    "Some scenes, such as the cave exploration, feel a bit disconnected from the rest of the story. Consider adding more context or links to Zeta-5's character development.",
-    "The safety notes in the visuals section are useful, but could be more comprehensive. Consider adding additional guidelines for depictions of Zeta-5's internal systems, its interactions with the Martian environment, and its relationships with potential human or alien characters."
-  ],
-  "recommendations": "Consider adding more nuance to Zeta-5's character development, exploring its motivations and emotions in greater depth. Additionally, think about how the story could be expanded to include more diverse and complex themes, such as the ethics of artificial intelligence or the impact of human activity on the Martian environment.",
-  "summary": "Red Refuge is a compelling and visually rich story that explores the themes of self-discovery, belonging, and survival in a Martian environment. With some refinement to its character development and plot structure, this story has the potential to be even more engaging and thought-provoking."
+  "error": "validation_failed",
+  "message": "{'id': 2, 'type': 'Minor', 'description': 'The story could benefit from more sensory details to immerse the reader in the Martian environment.'} is not of type 'string'\n\nFailed validating 'type' in schema['properties']['issues']['items']:\n    {'type': 'string'}\n\nOn instance['issues'][1]:\n    {'id': 2,\n     'type': 'Minor',\n     'description': 'The story could benefit from more sensory details to '\n                    'immerse the reader in the Martian environment.'}",
+  "candidate": {
+    "verdict": "Approved",
+    "score": 90,
+    "issues": [
+      {
+        "id": 1,
+        "type": "Minor",
+        "description": "Some sentences in the story could be rephrased for better clarity and flow."
+      },
+      {
+        "id": 2,
+        "type": "Minor",
+        "description": "The story could benefit from more sensory details to immerse the reader in the Martian environment."
+      }
+    ],
+    "recommendations": "Consider adding more sensory details to the story, and rephrase some sentences for better clarity and flow. The visuals are well-suited to the story, but ensure that they accurately reflect the characters and setting.",
+    "summary": "The story, 'Red Horizon', is a heartwarming and adventurous tale of a lone robot's journey to Mars, where it finds purpose, friendship, and a place to call home. The visuals are well-suited to the story, but require some attention to ensure accuracy and consistency with the characters and setting."
+  }
 }

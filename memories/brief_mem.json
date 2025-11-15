@@ -1,33 +1,70 @@
 {
-  "title": "Red Refuge",
-  "logline": "A lone robot crash-lands on Mars, only to discover a makeshift home and a new sense of purpose.",
+  "title": "Red Horizon",
+  "logline": "A lone robot's journey to Mars becomes a quest for purpose, friendship, and a place to call home.",
   "themes": [
-    "Self-discovery",
-    "Belonging",
-    "Survival"
+    "loneliness",
+    "belonging",
+    "self-discovery",
+    "friendship"
   ],
   "characters": [
     {
-      "name": "Zeta-5",
-      "role": "Robot",
+      "name": "Axiom",
+      "role": "Robot protagonist",
       "traits": [
-        "Resourceful",
-        "Independent",
-        "Curious"
+        "independent",
+        "curious",
+        "lonely"
+      ]
+    },
+    {
+      "name": "Markus",
+      "role": "Human scientist",
+      "traits": [
+        "kind",
+        "brilliant",
+        "patient"
+      ]
+    },
+    {
+      "name": "Nova",
+      "role": "Robot companion",
+      "traits": [
+        "playful",
+        "adventurous",
+        "loyal"
       ]
     }
   ],
-  "setting": "Mars, a barren yet breathtaking landscape",
-  "tone": "Heartwarming, Adventurous",
-  "target_audience": "Young adults and families",
+  "setting": "Mars colony",
+  "tone": "Heartwarming, adventurous",
+  "target_audience": "Children, families",
   "key_scenes": [
-    "Zeta-5's initial crash-landing on Mars",
-    "Exploring the Martian terrain and discovering a cave system",
-    "Establishing a makeshift home and adapting to Martian life"
+    {
+      "name": "Arrival on Mars",
+      "description": "Axiom lands on Mars and explores the barren landscape."
+    },
+    {
+      "name": "Meeting Markus",
+      "description": "Axiom meets Markus and begins to learn about humanity."
+    },
+    {
+      "name": "Discovery of Nova",
+      "description": "Axiom finds Nova, a damaged robot, and decides to repair her."
+    }
   ],
   "image_requirements": [
-    "Vibrant, reddish-orange color palette",
-    "Stylized robot design with a mix of metallic and worn parts",
-    "Breathtaking Martian landscapes with jagged rocks and vast expanses"
+    {
+      "description": "Axiom's robotic form and Martian landscape",
+      "style": "Semi-realistic, sci-fi elements"
+    },
+    {
+      "description": "Axiom and Nova exploring Mars",
+      "style": "Dynamic, playful"
+    },
+    {
+      "description": "Markus working in the Mars colony",
+      "style": "Serene, atmospheric"
+    }
   ]
 }
