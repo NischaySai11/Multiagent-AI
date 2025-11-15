@@ -1,6 +1,7 @@
 🚀 StoryCraft AI Studio
 Multi-Agent Story Generation Engine powered by Groq + LLaMA 8B
-<img width="1216" height="832" alt="banner" src="https://github.com/user-attachments/assets/cc5214ff-8c42-451b-a5af-e889c62b340f" />
+<img width="896" height="1000" alt="0pczffa6PZPjYEX1bkXWR" src="https://github.com/user-attachments/assets/89f8784e-d799-43e0-b8fd-a15e2c6d24f8" />
+
 
 🌟 Overview
 
