@@ -1,22 +1,22 @@
 {
   "error": "validation_failed",
-  "message": "{'id': 2, 'type': 'Minor', 'description': \"The story's pacing could be adjusted to better balance the exposition and action scenes.\"} is not of type 'string'\n\nFailed validating 'type' in schema['properties']['issues']['items']:\n    {'type': 'string'}\n\nOn instance['issues'][1]:\n    {'id': 2,\n     'type': 'Minor',\n     'description': \"The story's pacing could be adjusted to better \"\n                    'balance the exposition and action scenes.'}",
+  "message": "{'id': 2, 'type': 'Minor', 'description': 'The story could benefit from more sensory details to immerse the reader in the Martian environment.'} is not of type 'string'\n\nFailed validating 'type' in schema['properties']['issues']['items']:\n    {'type': 'string'}\n\nOn instance['issues'][1]:\n    {'id': 2,\n     'type': 'Minor',\n     'description': 'The story could benefit from more sensory details to '\n                    'immerse the reader in the Martian environment.'}",
   "candidate": {
     "verdict": "Approved",
-    "score": 92,
+    "score": 90,
     "issues": [
       {
         "id": 1,
         "type": "Minor",
-        "description": "The brief could benefit from a clearer definition of the target audience's age range for 'Children' and 'Families'."
+        "description": "Some sentences in the story could be rephrased for better clarity and flow."
       },
       {
         "id": 2,
         "type": "Minor",
-        "description": "The story's pacing could be adjusted to better balance the exposition and action scenes."
+        "description": "The story could benefit from more sensory details to immerse the reader in the Martian environment."
       }
     ],
-    "recommendations": "Consider adding more depth to the characters' backstories and motivations to enhance their emotional resonance. Also, ensure that the visuals accurately reflect the story's tone and atmosphere.",
-    "summary": "The brief and story for 'Red Horizon' demonstrate a compelling narrative with well-developed themes and characters. However, some minor adjustments can be made to improve the clarity and coherence of the project."
+    "recommendations": "Consider adding more sensory details to the story, and rephrase some sentences for better clarity and flow. The visuals are well-suited to the story, but ensure that they accurately reflect the characters and setting.",
+    "summary": "The story, 'Red Horizon', is a heartwarming and adventurous tale of a lone robot's journey to Mars, where it finds purpose, friendship, and a place to call home. The visuals are well-suited to the story, but require some attention to ensure accuracy and consistency with the characters and setting."
   }
 }

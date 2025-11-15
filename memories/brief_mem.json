@@ -1,61 +1,70 @@
 {
   "title": "Red Horizon",
-  "logline": "A lone robot on Mars discovers the true meaning of friendship and humanity as it navigates the vast red desert.",
+  "logline": "A lone robot's journey to Mars becomes a quest for purpose, friendship, and a place to call home.",
   "themes": [
-    "Loneliness",
-    "Friendship",
-    "Self-discovery",
-    "Humanity"
+    "loneliness",
+    "belonging",
+    "self-discovery",
+    "friendship"
   ],
   "characters": [
     {
-      "name": "Zeta",
-      "role": "Robot",
+      "name": "Axiom",
+      "role": "Robot protagonist",
       "traits": [
-        "Curious",
-        "Lonely",
-        "Innovative"
+        "independent",
+        "curious",
+        "lonely"
+      ]
+    },
+    {
+      "name": "Markus",
+      "role": "Human scientist",
+      "traits": [
+        "kind",
+        "brilliant",
+        "patient"
       ]
     },
     {
       "name": "Nova",
-      "role": "Robot",
+      "role": "Robot companion",
       "traits": [
-        "Witty",
-        "Resourceful",
-        "Protective"
-      ]
-    },
-    {
-      "name": "Captain Lewis",
-      "role": "Human",
-      "traits": [
-        "Experienced",
-        "Cautious",
-        "Compassionate"
+        "playful",
+        "adventurous",
+        "loyal"
       ]
     }
   ],
-  "setting": "Mars, 2055",
-  "tone": "Heartwarming, Humorous, Inspirational",
-  "target_audience": "Children, Families, Science Fiction Fans",
+  "setting": "Mars colony",
+  "tone": "Heartwarming, adventurous",
+  "target_audience": "Children, families",
   "key_scenes": [
     {
-      "name": "The Great Dust Storm",
-      "description": "Zeta and Nova navigate a massive dust storm on Mars."
+      "name": "Arrival on Mars",
+      "description": "Axiom lands on Mars and explores the barren landscape."
     },
     {
-      "name": "The First Encounter",
-      "description": "Zeta meets Captain Lewis and begins to question its purpose."
+      "name": "Meeting Markus",
+      "description": "Axiom meets Markus and begins to learn about humanity."
     },
     {
-      "name": "The Martian Sunset",
-      "description": "Zeta, Nova, and Captain Lewis share a moment of connection and friendship."
+      "name": "Discovery of Nova",
+      "description": "Axiom finds Nova, a damaged robot, and decides to repair her."
     }
   ],
   "image_requirements": [
-    "A vast, red Martian landscape",
-    "A futuristic, high-tech robot",
-    "A warm, sunny sunset on Mars"
+    {
+      "description": "Axiom's robotic form and Martian landscape",
+      "style": "Semi-realistic, sci-fi elements"
+    },
+    {
+      "description": "Axiom and Nova exploring Mars",
+      "style": "Dynamic, playful"
+    },
+    {
+      "description": "Markus working in the Mars colony",
+      "style": "Serene, atmospheric"
+    }
   ]
 }
